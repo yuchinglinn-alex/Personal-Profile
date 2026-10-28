@@ -14,6 +14,7 @@
     <nav class="nav container" aria-label="Primary">
       <a class="nav-brand" href="#top">Alex</a>
       <ul class="nav-links">
+        <li><a href="#map">Map</a></li>
         <li><a href="#about">About</a></li>
         <li><a href="#experience">Experience</a></li>
         <li><a href="#projects">Projects</a></li>
@@ -28,10 +29,56 @@
     <section id="top" class="hero container">
       <p class="eyebrow">Hello, I'm</p>
       <h1>Alex</h1>
-      <p class="headline">Your role or professional headline goes here.</p>
-      <div class="hero-actions">
-        <a class="button" href="#contact">Get in touch</a>
-        <a class="button button-ghost" href="#experience">See my work</a>
+      <p class="headline">MBA with a tech background, specializing in credit, data analytics and digital marketing, with experience in brand marketing.</p>
+    </section>
+
+    <!-- Mind map: each node's data-topic matches a panel below and the data-topics on roles in Experience.
+         To add a topic: add a button here, a panel below, and tag the related roles. -->
+    <section id="map" class="map-section container" aria-labelledby="map-title">
+      <h2 id="map-title" class="visually-hidden">How my experience connects</h2>
+      <div class="mindmap" data-mindmap>
+        <svg class="mindmap-lines" aria-hidden="true"></svg>
+        <div class="node node-center">Alex</div>
+        <button type="button" class="node node-foundation" data-topic="mba">MBA</button>
+        <button type="button" class="node node-foundation" data-topic="tech">Tech background</button>
+        <button type="button" class="node node-specialty" data-topic="credit">Credit</button>
+        <button type="button" class="node node-specialty" data-topic="data">Data Analytics</button>
+        <button type="button" class="node node-specialty" data-topic="digital">Digital Marketing</button>
+        <button type="button" class="node node-experience" data-topic="brand">Brand Marketing</button>
+      </div>
+
+      <ul class="legend" aria-label="Legend">
+        <li><span class="swatch swatch-foundation"></span>Foundation</li>
+        <li><span class="swatch swatch-specialty"></span>Specialty</li>
+        <li><span class="swatch swatch-experience"></span>Experience</li>
+      </ul>
+
+      <div class="topic-panels" aria-live="polite">
+        <p class="topic-hint" data-topic-panel="none">Tap a topic to see how it fits into my work.</p>
+        <div class="topic-panel" data-topic-panel="mba" hidden>
+          <h3>MBA</h3>
+          <p>School, year, and the focus of your MBA, plus what it added to how you work.</p>
+        </div>
+        <div class="topic-panel" data-topic-panel="tech" hidden>
+          <h3>Tech background</h3>
+          <p>Your technical education or early roles, and the tools you're comfortable with.</p>
+        </div>
+        <div class="topic-panel" data-topic-panel="credit" hidden>
+          <h3>Credit</h3>
+          <p>What you've done in credit, such as risk, underwriting, or credit products, and the results.</p>
+        </div>
+        <div class="topic-panel" data-topic-panel="data" hidden>
+          <h3>Data Analytics</h3>
+          <p>The kinds of analysis you do, the tools you use, and decisions your work has shaped.</p>
+        </div>
+        <div class="topic-panel" data-topic-panel="digital" hidden>
+          <h3>Digital Marketing</h3>
+          <p>Channels, campaigns, and growth results you've driven.</p>
+        </div>
+        <div class="topic-panel" data-topic-panel="brand" hidden>
+          <h3>Brand Marketing</h3>
+          <p>Brands you've worked on, positioning or campaign work, and what came of it.</p>
+        </div>
       </div>
     </section>
 
@@ -41,11 +88,12 @@
       <p>A short paragraph about who you are, what you do, and what you care about in your work.</p>
     </section>
 
-    <!-- Experience: copy an <li class="role"> block for each position, newest first -->
+    <!-- Experience: copy an <li class="role"> block for each position, newest first.
+         data-topics lists the mind map topics this role connects to (mba tech credit data digital brand). -->
     <section id="experience" class="section container">
       <h2>Experience</h2>
       <ol class="timeline">
-        <li class="role">
+        <li class="role" data-topics="credit data">
           <div class="role-meta">
             <span class="role-dates">2023 – Present</span>
           </div>
@@ -57,7 +105,7 @@
             </ul>
           </div>
         </li>
-        <li class="role">
+        <li class="role" data-topics="digital brand">
           <div class="role-meta">
             <span class="role-dates">2020 – 2023</span>
           </div>
@@ -112,6 +160,7 @@
     <p class="container">© <span id="year">2026</span> Alex</p>
   </footer>
 
+  <script src="mindmap.js" defer></script>
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 </body>
 </html>

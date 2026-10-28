@@ -5,12 +5,13 @@ Alex's personal profile website, a single page built with plain HTML and CSS and
 ## Files
 
 - `index.html`: all page content (About, Experience, Projects, Skills, Contact).
+- `mindmap.js`: lays out the mind map and links each topic to its panel and to the roles tagged with it.
 - `styles.css`: layout and colors. The color tokens at the top of the file control the whole theme, including dark mode.
 - `.nojekyll`: tells GitHub Pages to serve the files as they are, without a Jekyll build.
 
 ## Editing content
 
-Open `index.html` and replace the placeholder text. To add a job, copy one `<li class="role">` block inside the Experience section. To add a project, copy one `<article class="card">` block.
+Open `index.html` and replace the placeholder text. To add a job, copy one `<li class="role">` block inside the Experience section. To add a project, copy one `<article class="card">` block. Tag a role with mind map topics using its `data-topics` attribute (for example `data-topics="credit data"`), and edit each topic's description in its `data-topic-panel` block.
 
 ## Previewing locally
 
