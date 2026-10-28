@@ -357,7 +357,7 @@ h3 {
 
 .role {
   display: grid;
-  grid-template-columns: 9rem 1fr;
+  grid-template-columns: 10.5rem 1fr;
   gap: 1rem;
   padding: 1rem 0;
 }
@@ -420,7 +420,7 @@ h3 {
 /* Project cards */
 .cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1rem;
 }
 
@@ -475,4 +475,31 @@ h3 {
 
 .site-footer p {
   margin: 0;
+}
+
+/* Education */
+.edu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.edu li + li {
+  margin-top: 1rem;
+}
+
+.edu p {
+  margin: 0;
+  color: var(--muted);
+}
+
+/* Skill groups */
+.skill-group {
+  margin: 1.25rem 0 0.5rem;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+.skill-group:first-of-type {
+  margin-top: 0;
 }
