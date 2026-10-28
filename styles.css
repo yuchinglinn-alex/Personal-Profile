@@ -181,63 +181,120 @@ a {
   padding-bottom: 2.5rem;
 }
 
-/* Without JavaScript the nodes wrap like tags; mindmap.js switches to the radial layout. */
-.mindmap {
-  position: relative;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.75rem;
-  padding: 1.5rem 0;
+/* Without JavaScript the map's source list shows as a plain outline. */
+.mindmap-outline {
+  margin: 1rem auto 1.5rem;
+  padding-left: 2.25rem;
 }
 
-.mindmap.is-radial {
-  display: block;
-  height: 420px;
-  padding: 0;
+.mindmap-outline > li {
+  margin-top: 0.5rem;
+  font-weight: 600;
+}
+
+.mindmap-outline ul {
+  font-weight: 400;
+}
+
+.mindmap-outline small {
+  margin-left: 0.5rem;
+  color: var(--muted);
+}
+
+.mindmap {
+  position: relative;
+}
+
+.mindmap.is-ready {
+  height: min(72vh, 640px);
+  min-height: 420px;
+  margin: 1rem 0 0.5rem;
+  border-block: 1px solid var(--border);
+  background-color: var(--surface);
+  background-image: radial-gradient(var(--border) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+.mindmap-viewport {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  touch-action: none;
+  cursor: grab;
+}
+
+.is-dragging .mindmap-viewport {
+  cursor: grabbing;
+}
+
+/* The world is the zoomable layer; its origin is the viewport center. */
+.mindmap-world {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  transform-origin: 0 0;
+}
+
+.mindmap-world.is-animating {
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .mindmap-lines {
-  display: none;
-}
-
-.is-radial .mindmap-lines {
-  display: block;
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  overflow: visible;
+  width: 1px;
+  height: 1px;
 }
 
-.mindmap-lines line {
-  stroke: var(--border);
-  stroke-width: 2;
-  transition: stroke 0.2s;
+.mindmap-lines path {
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  transition: opacity 0.4s, stroke-width 0.3s;
 }
 
-.mindmap-lines line.is-active {
-  stroke: var(--text);
+.line-foundation { stroke: var(--foundation); }
+.line-specialty { stroke: var(--specialty); }
+.line-experience { stroke: var(--experience); }
+
+.topic-line {
+  opacity: 0.45;
+}
+
+.topic-line.is-active {
+  opacity: 1;
+  stroke-width: 4;
+}
+
+.detail-line {
+  opacity: 0;
+  stroke-dasharray: 4 6;
+}
+
+.detail-line.is-open {
+  opacity: 0.8;
 }
 
 .node {
   --node-color: var(--accent);
-  max-width: 9.5rem;
-  padding: 0.55rem 0.9rem;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  max-width: 11rem;
+  padding: 0.6rem 1rem;
   border: 2px solid var(--node-color);
   border-radius: 999px;
   background: var(--surface);
   color: var(--text);
   font: inherit;
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 600;
   line-height: 1.25;
   text-align: center;
-  transition: background 0.2s, color 0.2s, transform 0.2s;
-}
-
-.is-radial .node {
-  position: absolute;
-  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 0.06);
+  transition: background 0.2s, color 0.2s, transform 0.2s, box-shadow 0.2s;
 }
 
 button.node {
@@ -246,12 +303,8 @@ button.node {
 
 button.node:hover,
 button.node:focus-visible {
-  transform: scale(1.05);
-}
-
-.is-radial button.node:hover,
-.is-radial button.node:focus-visible {
-  transform: translate(-50%, -50%) scale(1.05);
+  transform: translate(-50%, -50%) scale(1.08);
+  box-shadow: 0 6px 18px rgb(0 0 0 / 0.12);
 }
 
 button.node:focus-visible {
@@ -259,23 +312,118 @@ button.node:focus-visible {
   outline-offset: 3px;
 }
 
-.node.is-active {
+.node-topic.is-active {
   background: var(--node-color);
   color: var(--bg);
 }
 
+/* When a topic is open, the other topics step back. */
+.has-active .node-topic:not(.is-active) {
+  opacity: 0.45;
+}
+
+.has-active .topic-line:not(.is-active) {
+  opacity: 0.15;
+}
+
 .node-center {
+  --node-color: var(--text);
   z-index: 1;
-  padding: 1rem 1.4rem;
-  border-color: var(--text);
+  padding: 1.1rem 1.6rem;
   background: var(--text);
   color: var(--bg);
-  font-size: 1.2rem;
+  font-size: 1.35rem;
+}
+
+.node-detail {
+  z-index: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  max-width: none;
+  padding: 0.55rem 0.9rem;
+  border-width: 1.5px;
+  border-radius: 14px;
+  font-size: 0.9rem;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0.4);
+  transition: left 0.5s cubic-bezier(0.22, 1, 0.36, 1), top 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.35s, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.node-detail.is-open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.node-detail span {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--node-color);
+}
+
+.node-topic,
+.node-center {
+  z-index: 1;
 }
 
 .node-foundation { --node-color: var(--foundation); }
 .node-specialty { --node-color: var(--specialty); }
 .node-experience { --node-color: var(--experience); }
+
+.map-controls {
+  position: absolute;
+  right: 0.75rem;
+  top: 0.75rem;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 0.08);
+}
+
+.map-controls button {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.map-controls button + button {
+  border-top: 1px solid var(--border);
+}
+
+.map-controls button:hover,
+.map-controls button:focus-visible {
+  background: var(--highlight-bg);
+}
+
+.map-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 0.75rem;
+  z-index: 2;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100% - 1.5rem);
+  margin: 0;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface) 85%, transparent);
+  color: var(--muted);
+  font-size: 0.8rem;
+  text-align: center;
+  pointer-events: none;
+}
 
 .legend {
   display: flex;
@@ -313,21 +461,68 @@ button.node:focus-visible {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 1.1rem 1.2rem;
+  animation: panel-in 0.35s ease-out;
 }
 
 .topic-panel p {
   margin: 0;
 }
 
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
 @media (max-width: 560px) {
-  .mindmap.is-radial {
-    height: 500px;
+  .mindmap.is-ready {
+    height: 60vh;
+    min-height: 380px;
   }
 
-  .node {
-    max-width: 7rem;
-    padding: 0.45rem 0.7rem;
-    font-size: 0.85rem;
+  .map-hint {
+    bottom: 0.5rem;
+    font-size: 0.75rem;
+  }
+}
+
+.hint-touch {
+  display: none;
+}
+
+@media (pointer: coarse) {
+  .hint-touch {
+    display: inline;
+  }
+
+  .hint-mouse {
+    display: none;
+  }
+}
+
+/* Scroll-in animation, set up by reveal.js */
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
   }
 }
 

@@ -33,52 +33,103 @@
       <p class="headline">Senior Credit Data Analyst in New York. MBA with a tech background, connecting credit risk, data analytics and digital marketing.</p>
     </section>
 
-    <!-- Mind map: each node's data-topic matches a panel below and the data-topics on roles in Experience.
-         To add a topic: add a button here, a panel below, and tag the related roles. -->
-    <section id="map" class="map-section container" aria-labelledby="map-title">
+    <!-- Mind map. The nested list below is the map's content: each topic <li> has a data-topic
+         that matches a panel further down and the data-topics on roles in Experience, and a
+         data-group (foundation, specialty, experience) that sets its color. Each inner <li> is a
+         detail that branches out when the topic is opened; <small> is its supporting line.
+         Without JavaScript the list shows as a plain outline. -->
+    <section id="map" class="map-section" aria-labelledby="map-title">
       <h2 id="map-title" class="visually-hidden">How my experience connects</h2>
       <div class="mindmap" data-mindmap>
-        <svg class="mindmap-lines" aria-hidden="true"></svg>
-        <div class="node node-center">Alex</div>
-        <button type="button" class="node node-foundation" data-topic="mba">MBA</button>
-        <button type="button" class="node node-foundation" data-topic="tech">Tech background</button>
-        <button type="button" class="node node-specialty" data-topic="credit">Credit</button>
-        <button type="button" class="node node-specialty" data-topic="data">Data Analytics</button>
-        <button type="button" class="node node-specialty" data-topic="digital">Digital Marketing</button>
-        <button type="button" class="node node-experience" data-topic="brand">Brand Marketing</button>
+        <ul class="mindmap-outline container" data-mindmap-source>
+          <li data-topic="mba" data-group="foundation">MBA
+            <ul>
+              <li>National Chengchi University<small>International Marketing · 2019–21</small></li>
+              <li>Thesis<small>Governance &amp; SDG performance</small></li>
+              <li>Scholarship<small>Sustainable Development &amp; Social Care</small></li>
+            </ul>
+          </li>
+          <li data-topic="tech" data-group="foundation">Tech background
+            <ul>
+              <li>UIUC MS, Tech Management<small>Business Data Analytics · 2021–22</small></li>
+              <li>Power BI certified<small>Microsoft Data Analyst Associate</small></li>
+              <li>AI automation<small>Power Automate · OCR · LLMs</small></li>
+              <li>Python · SQL · AWS<small>Everyday toolkit</small></li>
+            </ul>
+          </li>
+          <li data-topic="credit" data-group="specialty">Credit
+            <ul>
+              <li>5Cs credit risk model<small>−15% default rate</small></li>
+              <li>Default prediction<small>73% accuracy on late payments</small></li>
+              <li>Targeted collections<small>−8% delinquencies</small></li>
+              <li>Risk tiering<small>1,000+ customers</small></li>
+            </ul>
+          </li>
+          <li data-topic="data" data-group="specialty">Data Analytics
+            <ul>
+              <li>Power BI dashboards<small>50+ analyst hours saved monthly</small></li>
+              <li>CRM analytics<small>8,000+ prospects</small></li>
+              <li>Nielsen &amp; Mintel<small>100+ products tracked</small></li>
+              <li>P&amp;L analysis<small>Monthly, for sales strategy</small></li>
+            </ul>
+          </li>
+          <li data-topic="digital" data-group="specialty">Digital Marketing
+            <ul>
+              <li>Salesforce Marketing Cloud<small>+15% customer retention</small></li>
+              <li>Social strategy<small>+10% followers, 6% engagement</small></li>
+              <li>Website UAT<small>5+ product sites</small></li>
+              <li>SaaS launch content<small>+7% customer satisfaction</small></li>
+            </ul>
+          </li>
+          <li data-topic="brand" data-group="experience">Brand Marketing
+            <ul>
+              <li>Aveeno<small>+25% social engagement YoY</small></li>
+              <li>Listerine<small>+10% convenience-store sales</small></li>
+              <li>Social listening<small>100+ products</small></li>
+            </ul>
+          </li>
+        </ul>
+        <div class="map-controls" hidden>
+          <button type="button" data-zoom="in" aria-label="Zoom in">+</button>
+          <button type="button" data-zoom="out" aria-label="Zoom out">−</button>
+          <button type="button" data-zoom="reset" aria-label="Show the whole map">⤢</button>
+        </div>
+        <p class="map-hint" hidden>Tap a topic to open it · drag to move · <span class="hint-touch">pinch to zoom</span><span class="hint-mouse">Ctrl + scroll to zoom</span></p>
       </div>
 
-      <ul class="legend" aria-label="Legend">
-        <li><span class="swatch swatch-foundation"></span>Foundation</li>
-        <li><span class="swatch swatch-specialty"></span>Specialty</li>
-        <li><span class="swatch swatch-experience"></span>Experience</li>
-      </ul>
+      <div class="container">
+        <ul class="legend" aria-label="Legend">
+          <li><span class="swatch swatch-foundation"></span>Foundation</li>
+          <li><span class="swatch swatch-specialty"></span>Specialty</li>
+          <li><span class="swatch swatch-experience"></span>Experience</li>
+        </ul>
 
-      <div class="topic-panels" aria-live="polite">
-        <p class="topic-hint" data-topic-panel="none">Tap a topic to see how it fits into my work.</p>
-        <div class="topic-panel" data-topic-panel="mba" hidden>
-          <h3>MBA</h3>
-          <p>MBA in International Marketing from National Chengchi University in Taipei (2019–2021), with a Scholarship for Sustainable Development and Social Care. My thesis looked at how corporate governance and shareholder types relate to performance on the Sustainable Development Goals.</p>
-        </div>
-        <div class="topic-panel" data-topic-panel="tech" hidden>
-          <h3>Tech background</h3>
-          <p>MS in Technology Management with a Business Data Analytics concentration from the University of Illinois Urbana-Champaign, Gies College of Business (2021–2022). Today I build automation with Power Automate, OCR and prompt-engineered LLM workflows, and I work in Python, SQL and AWS.</p>
-        </div>
-        <div class="topic-panel" data-topic-panel="credit" hidden>
-          <h3>Credit</h3>
-          <p>At OEC Freight I built a rule-based 5Cs credit risk model that assigns risk tiers to 1,000+ customers, cutting default rates by 15%. A Python default prediction model then helped target collections and reduce delinquencies by 8%.</p>
-        </div>
-        <div class="topic-panel" data-topic-panel="data" hidden>
-          <h3>Data Analytics</h3>
-          <p>From Power BI dashboards that save 50+ analyst hours a month, to CRM analytics on 8,000+ prospects and Nielsen market data, I turn data into decisions. Microsoft Certified: Power BI Data Analyst Associate.</p>
-        </div>
-        <div class="topic-panel" data-topic-panel="digital" hidden>
-          <h3>Digital Marketing</h3>
-          <p>Ran targeted campaigns on Salesforce Marketing Cloud that lifted customer retention by 15%, grew social followers by 10% at TechExcel, and led UAT for 5+ product homepage sites at Johnson &amp; Johnson.</p>
-        </div>
-        <div class="topic-panel" data-topic-panel="brand" hidden>
-          <h3>Brand Marketing</h3>
-          <p>At Johnson &amp; Johnson I led consumer behavior and social listening work across 100+ products, growing Aveeno's social engagement by 25% year over year and helping lift Listerine convenience-store sales by 10%.</p>
+        <div class="topic-panels" aria-live="polite">
+          <p class="topic-hint" data-topic-panel="none">Tap a topic to see how it fits into my work.</p>
+          <div class="topic-panel" data-topic-panel="mba" hidden>
+            <h3>MBA</h3>
+            <p>MBA in International Marketing from National Chengchi University in Taipei (2019–2021), with a Scholarship for Sustainable Development and Social Care. My thesis looked at how corporate governance and shareholder types relate to performance on the Sustainable Development Goals.</p>
+          </div>
+          <div class="topic-panel" data-topic-panel="tech" hidden>
+            <h3>Tech background</h3>
+            <p>MS in Technology Management with a Business Data Analytics concentration from the University of Illinois Urbana-Champaign, Gies College of Business (2021–2022). Today I build automation with Power Automate, OCR and prompt-engineered LLM workflows, and I work in Python, SQL and AWS.</p>
+          </div>
+          <div class="topic-panel" data-topic-panel="credit" hidden>
+            <h3>Credit</h3>
+            <p>At OEC Freight I built a rule-based 5Cs credit risk model that assigns risk tiers to 1,000+ customers, cutting default rates by 15%. A Python default prediction model then helped target collections and reduce delinquencies by 8%.</p>
+          </div>
+          <div class="topic-panel" data-topic-panel="data" hidden>
+            <h3>Data Analytics</h3>
+            <p>From Power BI dashboards that save 50+ analyst hours a month, to CRM analytics on 8,000+ prospects and Nielsen market data, I turn data into decisions. Microsoft Certified: Power BI Data Analyst Associate.</p>
+          </div>
+          <div class="topic-panel" data-topic-panel="digital" hidden>
+            <h3>Digital Marketing</h3>
+            <p>Ran targeted campaigns on Salesforce Marketing Cloud that lifted customer retention by 15%, grew social followers by 10% at TechExcel, and led UAT for 5+ product homepage sites at Johnson &amp; Johnson.</p>
+          </div>
+          <div class="topic-panel" data-topic-panel="brand" hidden>
+            <h3>Brand Marketing</h3>
+            <p>At Johnson &amp; Johnson I led consumer behavior and social listening work across 100+ products, growing Aveeno's social engagement by 25% year over year and helping lift Listerine convenience-store sales by 10%.</p>
+          </div>
         </div>
       </div>
     </section>
@@ -241,6 +292,7 @@
   </footer>
 
   <script src="mindmap.js" defer></script>
+  <script src="reveal.js" defer></script>
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 </body>
 </html>
