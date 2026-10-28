@@ -14,11 +14,13 @@
   var SVG_NS = 'http://www.w3.org/2000/svg';
 
   // World layout, in px before zoom.
-  var TOPIC_RADIUS = 320;
+  var TOPIC_RADIUS = 280;
   var DETAIL_RADIUS = 220;
   var DETAIL_SPREAD = Math.PI * 0.8;
   var MIN_SCALE = 0.3;
   var MAX_SCALE = 2.5;
+  var SUB_RADIUS = 175;
+  var SUB_SPREAD = Math.PI * 0.85;
   var FOCUS_MAX_SCALE = 1.3;
   var GAP = 14;
 
@@ -26,16 +28,26 @@
 
   // ---- Read the outline -------------------------------------------------
 
-  var topics = Array.prototype.map.call(source.children, function (li) {
-    var label = li.firstChild.textContent.trim();
-    var details = Array.prototype.map.call(li.querySelectorAll('li'), function (item) {
-      var small = item.querySelector('small');
+  // Each item's own text is its label, <small> its note, and a nested <ul> its branches.
+  function readItems(list) {
+    if (!list) return [];
+    return Array.prototype.map.call(list.children, function (item) {
+      var small = item.querySelector(':scope > small');
       return {
         label: item.firstChild.textContent.trim(),
-        note: small ? small.textContent.trim() : ''
+        note: small ? small.textContent.trim() : '',
+        items: readItems(item.querySelector(':scope > ul'))
       };
     });
-    return { id: li.dataset.topic, group: li.dataset.group, label: label, details: details };
+  }
+
+  var topics = Array.prototype.map.call(source.children, function (li) {
+    return {
+      id: li.dataset.topic,
+      group: li.dataset.group,
+      label: li.firstChild.textContent.trim(),
+      details: readItems(li.querySelector(':scope > ul'))
+    };
   });
 
   // ---- Build the canvas -------------------------------------------------
@@ -86,12 +98,17 @@
   place(center, 0, 0);
   world.appendChild(center);
 
+  // On tall, narrow screens squeeze the ring into an upright oval so the map can zoom in further.
+  var portrait = viewport.clientWidth < viewport.clientHeight;
+  var rx = TOPIC_RADIUS * (portrait ? 0.62 : 1);
+  var ry = TOPIC_RADIUS * (portrait ? 1.1 : 1);
+
   var labels = {};
   topics.forEach(function (topic, i) {
     labels[topic.id] = topic.label;
     var angle = -Math.PI / 2 + (i / topics.length) * Math.PI * 2;
-    topic.x = Math.cos(angle) * TOPIC_RADIUS;
-    topic.y = Math.sin(angle) * TOPIC_RADIUS;
+    topic.x = Math.cos(angle) * rx;
+    topic.y = Math.sin(angle) * ry;
 
     topic.path = addPath(curve(0, 0, topic.x, topic.y), 'topic-line', topic.group);
 
@@ -115,16 +132,41 @@
 
       detail.path = addPath(curve(topic.x, topic.y, detail.x, detail.y), 'detail-line', topic.group);
 
-      var el = document.createElement('div');
+      var branches = detail.items.length > 0;
+      var el = document.createElement(branches ? 'button' : 'div');
       el.className = 'node node-detail node-' + topic.group;
       el.style.transitionDelay = j * 40 + 'ms';
       el.innerHTML = '<strong></strong>' + (detail.note ? '<span></span>' : '');
       el.querySelector('strong').textContent = detail.label;
       if (detail.note) el.querySelector('span').textContent = detail.note;
+      if (branches) {
+        el.type = 'button';
+        el.classList.add('has-branches');
+        el.setAttribute('aria-expanded', 'false');
+        el.tabIndex = -1;
+        var mark = document.createElement('i');
+        mark.className = 'branch-mark';
+        mark.setAttribute('aria-hidden', 'true');
+        el.appendChild(mark);
+      }
       // Details start tucked behind their topic and slide out when it opens.
       place(el, topic.x, topic.y);
       world.appendChild(el);
       detail.node = el;
+      detail.topic = topic;
+
+      // Third level: what each detail is about. Positions are set in relax().
+      detail.items.forEach(function (sub, k) {
+        sub.path = addPath('', 'sub-line', topic.group);
+        var subEl = document.createElement('div');
+        subEl.className = 'node node-sub node-' + topic.group;
+        subEl.style.transitionDelay = k * 40 + 'ms';
+        subEl.innerHTML = '<strong></strong>' + (sub.note ? '<span></span>' : '');
+        subEl.querySelector('strong').textContent = sub.label;
+        if (sub.note) subEl.querySelector('span').textContent = sub.note;
+        world.appendChild(subEl);
+        sub.node = subEl;
+      });
     });
   });
 
@@ -153,6 +195,28 @@
     return true;
   }
 
+  // Push the movable boxes apart from each other and off the fixed ones.
+  function spread(boxes, fixed) {
+    for (var pass = 0; pass < 200; pass++) {
+      var moved = false;
+      for (var i = 0; i < boxes.length; i++) {
+        for (var j = i + 1; j < boxes.length; j++) {
+          moved = separate(boxes[i], boxes[j], false) || moved;
+        }
+        for (var f = 0; f < fixed.length; f++) {
+          moved = separate(fixed[f], boxes[i], true) || moved;
+        }
+      }
+      if (!moved) return true;
+    }
+    return false;
+  }
+
+  function boxFor(item, x, y) {
+    var s = size(item.node);
+    return { x: x, y: y, w: s.w, h: s.h, item: item };
+  }
+
   function relax() {
     var fixed = [{ x: 0, y: 0, el: center }].concat(topics.map(function (t) {
       return { x: t.x, y: t.y, el: t.node };
@@ -162,30 +226,52 @@
       f.w = s.w;
       f.h = s.h;
     });
+    // Keep topic sizes so framing the map can use them.
+    topics.forEach(function (t, i) {
+      t.w = fixed[i + 1].w;
+      t.h = fixed[i + 1].h;
+    });
     topics.forEach(function (topic) {
       var boxes = topic.details.map(function (d) {
-        var s = size(d.node);
-        return { x: d.x, y: d.y, w: s.w, h: s.h, detail: d };
+        return boxFor(d, d.x, d.y);
       });
-      for (var pass = 0; pass < 40; pass++) {
-        var moved = false;
-        for (var i = 0; i < boxes.length; i++) {
-          for (var j = i + 1; j < boxes.length; j++) {
-            moved = separate(boxes[i], boxes[j], false) || moved;
-          }
-          fixed.forEach(function (f) {
-            moved = separate(f, boxes[i], true) || moved;
-          });
-        }
-        if (!moved) break;
-      }
+      spread(boxes, fixed);
       boxes.forEach(function (box) {
-        var d = box.detail;
+        var d = box.item;
         d.x = box.x;
         d.y = box.y;
         d.w = box.w;
         d.h = box.h;
         d.path.setAttribute('d', curve(topic.x, topic.y, d.x, d.y));
+      });
+
+      // Sub-branches fan out along the line from the topic through their detail,
+      // clear of the topic's other details.
+      topic.details.forEach(function (detail) {
+        var subs = detail.items;
+        if (!subs.length) return;
+        var angle = Math.atan2(detail.y - topic.y, detail.x - topic.x);
+        var obstacles = fixed.concat(boxes);
+        var subBoxes;
+        // In tight spots the boxes can get wedged; start them further out until they settle.
+        for (var reach = 1; reach <= 2.5; reach += 0.25) {
+          subBoxes = subs.map(function (sub, k) {
+            var offset = subs.length > 1 ? (k / (subs.length - 1) - 0.5) * SUB_SPREAD : 0;
+            var a = angle + offset;
+            var r = SUB_RADIUS * reach;
+            return boxFor(sub, detail.x + Math.cos(a) * r, detail.y + Math.sin(a) * r);
+          });
+          if (spread(subBoxes, obstacles)) break;
+        }
+        subBoxes.forEach(function (box) {
+          var sub = box.item;
+          sub.x = box.x;
+          sub.y = box.y;
+          sub.w = box.w;
+          sub.h = box.h;
+          sub.path.setAttribute('d', curve(detail.x, detail.y, sub.x, sub.y));
+          place(sub.node, detail.x, detail.y);
+        });
       });
     });
   }
@@ -225,7 +311,7 @@
     var h = viewport.clientHeight;
     // Leave room for the zoom buttons and the hint.
     var padX = 24;
-    var padY = 44;
+    var padY = 56;
     var s = clampScale(Math.min((w - padX * 2) / (box.maxX - box.minX), (h - padY * 2) / (box.maxY - box.minY)));
     if (maxScale) s = Math.min(s, maxScale);
     cam.scale = s;
@@ -252,8 +338,12 @@
     fit(boxAround([topic].concat(topic.details), { x: 90, y: 30 }), animate, FOCUS_MAX_SCALE);
   }
 
+  function focusOnDetail(detail, animate) {
+    fit(boxAround([detail, detail.topic].concat(detail.items), { x: 90, y: 30 }), animate, FOCUS_MAX_SCALE);
+  }
+
   function fitAll(animate) {
-    fit(boxAround(topics.concat([{ x: 0, y: 0 }]), { x: 90, y: 40 }), animate);
+    fit(boxAround(topics.concat([{ x: 0, y: 0 }]), { x: 90, y: 40 }), animate, 1.4);
   }
 
   // Zoom by a factor while keeping the point (px, py), relative to the viewport center, still.
@@ -269,9 +359,38 @@
   // ---- Selecting topics -------------------------------------------------
 
   var active = null;
+  var activeDetail = null;
+
+  function showBranches(detail, open) {
+    detail.node.classList.toggle('is-expanded', open);
+    detail.node.setAttribute('aria-expanded', open ? 'true' : 'false');
+    detail.items.forEach(function (sub) {
+      sub.node.classList.toggle('is-open', open);
+      sub.path.classList.toggle('is-open', open);
+      place(sub.node, open ? sub.x : detail.x, open ? sub.y : detail.y);
+    });
+  }
+
+  function openDetail(detail) {
+    if (activeDetail) showBranches(activeDetail, false);
+    activeDetail = activeDetail === detail ? null : detail;
+    map.classList.toggle('has-detail', !!activeDetail);
+    topics.forEach(function (topic) {
+      topic.details.forEach(function (d) {
+        d.node.classList.toggle('is-dimmed', !!activeDetail && d !== activeDetail);
+      });
+    });
+    if (activeDetail) {
+      showBranches(activeDetail, true);
+      focusOnDetail(activeDetail, true);
+    } else {
+      focusOn(detail.topic, true);
+    }
+  }
 
   function select(id) {
     active = active === id ? null : id;
+    if (activeDetail) openDetail(activeDetail);
 
     topics.forEach(function (topic) {
       var open = topic.id === active;
@@ -281,6 +400,7 @@
       topic.details.forEach(function (detail) {
         detail.node.classList.toggle('is-open', open);
         detail.path.classList.toggle('is-open', open);
+        if (detail.items.length) detail.node.tabIndex = open ? 0 : -1;
         place(detail.node, open ? detail.x : topic.x, open ? detail.y : topic.y);
       });
     });
@@ -307,6 +427,13 @@
       if (dragged) return;
       select(topic.id);
     });
+    topic.details.forEach(function (detail) {
+      if (!detail.items.length) return;
+      detail.node.addEventListener('click', function () {
+        if (dragged) return;
+        openDetail(detail);
+      });
+    });
   });
 
   center.addEventListener('click', function () {
@@ -330,6 +457,7 @@
   map.addEventListener('keydown', function (e) {
     if (e.key === '+' || e.key === '=') zoomAt(1.3, 0, 0, true);
     else if (e.key === '-') zoomAt(1 / 1.3, 0, 0, true);
+    else if (e.key === 'Escape' && activeDetail) openDetail(activeDetail);
     else if (e.key === 'Escape' && active) select(active);
   });
 
@@ -418,7 +546,8 @@
     cancelAnimationFrame(pending);
     pending = requestAnimationFrame(function () {
       var topic = topics.filter(function (t) { return t.id === active; })[0];
-      if (topic) focusOn(topic, false);
+      if (activeDetail) focusOnDetail(activeDetail, false);
+      else if (topic) focusOn(topic, false);
       else fitAll(false);
     });
   });

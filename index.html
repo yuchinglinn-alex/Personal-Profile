@@ -36,7 +36,8 @@
     <!-- Mind map. The nested list below is the map's content: each topic <li> has a data-topic
          that matches a panel further down and the data-topics on roles in Experience, and a
          data-group (foundation, specialty, experience) that sets its color. Each inner <li> is a
-         detail that branches out when the topic is opened; <small> is its supporting line.
+         detail that branches out when the topic is opened; <small> is its supporting line, and a
+         nested <ul> inside a detail adds a third level that opens when the detail is clicked.
          Without JavaScript the list shows as a plain outline. -->
     <section id="map" class="map-section" aria-labelledby="map-title">
       <h2 id="map-title" class="visually-hidden">How my experience connects</h2>
@@ -44,48 +45,165 @@
         <ul class="mindmap-outline container" data-mindmap-source>
           <li data-topic="mba" data-group="foundation">MBA
             <ul>
-              <li>National Chengchi University<small>International Marketing · 2019–21</small></li>
-              <li>Thesis<small>Governance &amp; SDG performance</small></li>
+              <li>National Chengchi University<small>International Marketing · 2019–21</small>
+                <ul>
+                  <li>International Marketing focus</li>
+                  <li>Taipei, Taiwan</li>
+                </ul>
+              </li>
+              <li>Thesis<small>Governance &amp; SDG performance</small>
+                <ul>
+                  <li>Corporate governance</li>
+                  <li>SDG performance</li>
+                  <li>Types of shareholders</li>
+                </ul>
+              </li>
               <li>Scholarship<small>Sustainable Development &amp; Social Care</small></li>
             </ul>
           </li>
           <li data-topic="tech" data-group="foundation">Tech background
             <ul>
-              <li>UIUC MS, Tech Management<small>Business Data Analytics · 2021–22</small></li>
+              <li>UIUC MS, Tech Management<small>Business Data Analytics · 2021–22</small>
+                <ul>
+                  <li>Gies College of Business</li>
+                  <li>Business Data Analytics focus</li>
+                </ul>
+              </li>
               <li>Power BI certified<small>Microsoft Data Analyst Associate</small></li>
-              <li>AI automation<small>Power Automate · OCR · LLMs</small></li>
-              <li>Python · SQL · AWS<small>Everyday toolkit</small></li>
+              <li>AI automation<small>Power Automate · OCR · LLMs</small>
+                <ul>
+                  <li>AI document model training</li>
+                  <li>OCR extraction</li>
+                  <li>Prompt-engineered LLM workflows</li>
+                  <li>Used across 10+ offices</li>
+                </ul>
+              </li>
+              <li>Python · SQL · AWS<small>Everyday toolkit</small>
+                <ul>
+                  <li>Python modeling</li>
+                  <li>SQL</li>
+                  <li>AWS EC2 &amp; S3</li>
+                  <li>Tableau &amp; SPSS</li>
+                </ul>
+              </li>
             </ul>
           </li>
           <li data-topic="credit" data-group="specialty">Credit
             <ul>
-              <li>5Cs credit risk model<small>−15% default rate</small></li>
-              <li>Default prediction<small>73% accuracy on late payments</small></li>
-              <li>Targeted collections<small>−8% delinquencies</small></li>
-              <li>Risk tiering<small>1,000+ customers</small></li>
+              <li>5Cs credit risk model<small>−15% default rate</small>
+                <ul>
+                  <li>D&amp;B score</li>
+                  <li>Payment history</li>
+                  <li>Credit status</li>
+                  <li>Collateral</li>
+                </ul>
+              </li>
+              <li>Default prediction<small>73% accuracy on late payments</small>
+                <ul>
+                  <li>Transaction patterns</li>
+                  <li>Macroeconomic factors</li>
+                  <li>Built in Python</li>
+                </ul>
+              </li>
+              <li>Targeted collections<small>−8% delinquencies</small>
+                <ul>
+                  <li>Guided by late-payment predictions</li>
+                </ul>
+              </li>
+              <li>Risk tiering<small>1,000+ customers</small>
+                <ul>
+                  <li>Scored with the 5Cs model</li>
+                  <li>Automated tier assignment</li>
+                  <li>Sharper risk segmentation</li>
+                  <li>−15% default rate</li>
+                </ul>
+              </li>
             </ul>
           </li>
           <li data-topic="data" data-group="specialty">Data Analytics
             <ul>
-              <li>Power BI dashboards<small>50+ analyst hours saved monthly</small></li>
-              <li>CRM analytics<small>8,000+ prospects</small></li>
-              <li>Nielsen &amp; Mintel<small>100+ products tracked</small></li>
-              <li>P&amp;L analysis<small>Monthly, for sales strategy</small></li>
+              <li>Power BI dashboards<small>50+ analyst hours saved monthly</small>
+                <ul>
+                  <li>Shipment volume</li>
+                  <li>Portfolio risk</li>
+                  <li>Payment trends</li>
+                  <li>Key risk indicators</li>
+                </ul>
+              </li>
+              <li>CRM analytics<small>8,000+ prospects</small>
+                <ul>
+                  <li>Weekly CRM reviews</li>
+                  <li>Targeted campaigns</li>
+                  <li>15% open · 10% click-to-open</li>
+                </ul>
+              </li>
+              <li>Nielsen &amp; Mintel<small>100+ products tracked</small>
+                <ul>
+                  <li>Consumer behavior reports</li>
+                  <li>Social listening meetings</li>
+                </ul>
+              </li>
+              <li>P&amp;L analysis<small>Monthly, for sales strategy</small>
+                <ul>
+                  <li>Nielsen sales data</li>
+                  <li>Campaign strategy</li>
+                  <li>Listerine +10% sales</li>
+                </ul>
+              </li>
             </ul>
           </li>
           <li data-topic="digital" data-group="specialty">Digital Marketing
             <ul>
-              <li>Salesforce Marketing Cloud<small>+15% customer retention</small></li>
-              <li>Social strategy<small>+10% followers, 6% engagement</small></li>
-              <li>Website UAT<small>5+ product sites</small></li>
-              <li>SaaS launch content<small>+7% customer satisfaction</small></li>
+              <li>Salesforce Marketing Cloud<small>+15% customer retention</small>
+                <ul>
+                  <li>Targeted campaigns</li>
+                  <li>15% open rate</li>
+                  <li>10% click-to-open rate</li>
+                </ul>
+              </li>
+              <li>Social strategy<small>+10% followers, 6% engagement</small>
+                <ul>
+                  <li>Competitive analysis</li>
+                  <li>Facebook &amp; LinkedIn posts</li>
+                  <li>Market trend insights</li>
+                </ul>
+              </li>
+              <li>Website UAT<small>5+ product sites</small>
+                <ul>
+                  <li>Test plans</li>
+                  <li>Scenarios &amp; test cases</li>
+                  <li>Run in JIRA</li>
+                </ul>
+              </li>
+              <li>SaaS launch content<small>+7% customer satisfaction</small>
+                <ul>
+                  <li>Demo videos</li>
+                  <li>Customer resources</li>
+                  <li>With IT, CS &amp; APAC teams</li>
+                </ul>
+              </li>
             </ul>
           </li>
           <li data-topic="brand" data-group="experience">Brand Marketing
             <ul>
-              <li>Aveeno<small>+25% social engagement YoY</small></li>
-              <li>Listerine<small>+10% convenience-store sales</small></li>
-              <li>Social listening<small>100+ products</small></li>
+              <li>Aveeno<small>+25% social engagement YoY</small>
+                <ul>
+                  <li>Social listening</li>
+                  <li>Consumer insights</li>
+                </ul>
+              </li>
+              <li>Listerine<small>+10% convenience-store sales</small>
+                <ul>
+                  <li>Monthly P&amp;L with Nielsen</li>
+                  <li>Convenience-store channel</li>
+                </ul>
+              </li>
+              <li>Social listening<small>100+ products</small>
+                <ul>
+                  <li>Nielsen &amp; Mintel data</li>
+                  <li>Internal &amp; external products</li>
+                </ul>
+              </li>
             </ul>
           </li>
         </ul>
@@ -94,7 +212,7 @@
           <button type="button" data-zoom="out" aria-label="Zoom out">−</button>
           <button type="button" data-zoom="reset" aria-label="Show the whole map">⤢</button>
         </div>
-        <p class="map-hint" hidden>Tap a topic to open it · drag to move · <span class="hint-touch">pinch to zoom</span><span class="hint-mouse">Ctrl + scroll to zoom</span></p>
+        <p class="map-hint" hidden>Tap a topic or + to open it · drag to move · <span class="hint-touch">pinch to zoom</span><span class="hint-mouse">Ctrl + scroll to zoom</span></p>
       </div>
 
       <div class="container">

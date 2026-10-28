@@ -12,7 +12,7 @@
   --experience: #b0603a;
   --highlight-bg: #eef5f4;
   --radius: 10px;
-  --max-width: 760px;
+  --max-width: 840px;
   --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
@@ -48,7 +48,7 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font);
-  font-size: 1.0625rem;
+  font-size: 1.1875rem;
   line-height: 1.65;
 }
 
@@ -107,7 +107,7 @@ a {
   list-style: none;
   margin: 0;
   padding: 0;
-  font-size: 0.95rem;
+  font-size: 1.05rem;
 }
 
 .nav-links a {
@@ -142,14 +142,14 @@ a {
 
 .hero h1 {
   margin: 0.25rem 0 0.5rem;
-  font-size: clamp(2.25rem, 7vw, 3.5rem);
+  font-size: clamp(2.5rem, 8vw, 4rem);
   line-height: 1.1;
 }
 
 .headline {
   margin: 0;
   max-width: 36rem;
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   color: var(--muted);
 }
 
@@ -277,18 +277,28 @@ a {
   opacity: 0.8;
 }
 
+.sub-line {
+  opacity: 0;
+  stroke-width: 1.75;
+}
+
+.sub-line.is-open {
+  opacity: 0.7;
+}
+
 .node {
   --node-color: var(--accent);
   position: absolute;
   transform: translate(-50%, -50%);
-  max-width: 11rem;
+  /* The world layer is 0px wide, so size nodes by their content rather than their container. */
+  width: max-content;
   padding: 0.6rem 1rem;
   border: 2px solid var(--node-color);
   border-radius: 999px;
   background: var(--surface);
   color: var(--text);
   font: inherit;
-  font-size: 1rem;
+  font-size: 1.15rem;
   font-weight: 600;
   line-height: 1.25;
   text-align: center;
@@ -318,8 +328,20 @@ button.node:focus-visible {
 }
 
 /* When a topic is open, the other topics step back. */
-.has-active .node-topic:not(.is-active) {
-  opacity: 0.45;
+/* Faded nodes stay opaque so the lines behind them don't show through. */
+.has-active .node-topic:not(.is-active),
+.node-detail.is-open.is-dimmed {
+  border-color: color-mix(in srgb, var(--node-color) 35%, var(--surface));
+  color: color-mix(in srgb, var(--text) 40%, var(--surface));
+  box-shadow: none;
+}
+
+.node-detail.is-dimmed span {
+  color: color-mix(in srgb, var(--node-color) 45%, var(--surface));
+}
+
+.node-detail.is-dimmed .branch-mark {
+  background: color-mix(in srgb, var(--node-color) 40%, var(--surface));
 }
 
 .has-active .topic-line:not(.is-active) {
@@ -332,7 +354,7 @@ button.node:focus-visible {
   padding: 1.1rem 1.6rem;
   background: var(--text);
   color: var(--bg);
-  font-size: 1.35rem;
+  font-size: 1.5rem;
 }
 
 .node-detail {
@@ -344,7 +366,7 @@ button.node:focus-visible {
   padding: 0.55rem 0.9rem;
   border-width: 1.5px;
   border-radius: 14px;
-  font-size: 0.9rem;
+  font-size: 1.05rem;
   opacity: 0;
   pointer-events: none;
   transform: translate(-50%, -50%) scale(0.4);
@@ -358,8 +380,75 @@ button.node:focus-visible {
   transform: translate(-50%, -50%) scale(1);
 }
 
+button.node-detail {
+  cursor: pointer;
+}
+
+.node-detail.has-branches {
+  padding-right: 2.1rem;
+}
+
+/* The small +/− badge on details that branch further. */
+.branch-mark {
+  position: absolute;
+  right: 0.55rem;
+  top: 50%;
+  display: grid;
+  place-items: center;
+  width: 1.15rem;
+  height: 1.15rem;
+  margin-top: -0.575rem;
+  border-radius: 50%;
+  background: var(--node-color);
+  color: var(--surface);
+  font-style: normal;
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.branch-mark::before {
+  content: "+";
+}
+
+.node-detail.is-expanded .branch-mark::before {
+  content: "−";
+}
+
+.node-detail.is-expanded {
+  background: color-mix(in srgb, var(--node-color) 14%, var(--surface));
+}
+
+.node-sub {
+  z-index: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 0.4rem 0.85rem;
+  border-width: 1.5px;
+  border-style: dashed;
+  border-radius: 999px;
+  font-size: 1rem;
+  font-weight: 600;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0.4);
+  transition: left 0.5s cubic-bezier(0.22, 1, 0.36, 1), top 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.35s, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.node-sub.is-open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.node-sub span {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--node-color);
+}
+
 .node-detail span {
-  font-size: 0.8rem;
+  font-size: 0.95rem;
   font-weight: 500;
   color: var(--node-color);
 }
@@ -420,7 +509,7 @@ button.node:focus-visible {
   border-radius: 999px;
   background: color-mix(in srgb, var(--surface) 85%, transparent);
   color: var(--muted);
-  font-size: 0.8rem;
+  font-size: 0.95rem;
   text-align: center;
   pointer-events: none;
 }
@@ -433,7 +522,7 @@ button.node:focus-visible {
   list-style: none;
   margin: 0.5rem 0 1.25rem;
   padding: 0;
-  font-size: 0.9rem;
+  font-size: 1rem;
   color: var(--muted);
 }
 
@@ -481,9 +570,20 @@ button.node:focus-visible {
     min-height: 380px;
   }
 
+  .node-topic {
+    max-width: 8rem;
+    white-space: normal;
+  }
+
+  .node-detail,
+  .node-sub {
+    max-width: 10rem;
+    white-space: normal;
+  }
+
   .map-hint {
     bottom: 0.5rem;
-    font-size: 0.75rem;
+    font-size: 0.85rem;
   }
 }
 
@@ -535,12 +635,12 @@ button.node:focus-visible {
 
 .section h2 {
   margin-top: 0;
-  font-size: 1.5rem;
+  font-size: 1.85rem;
 }
 
 h3 {
   margin: 0 0 0.25rem;
-  font-size: 1.1rem;
+  font-size: 1.3rem;
 }
 
 /* Experience timeline */
@@ -586,13 +686,13 @@ h3 {
   padding: 0 0.5rem;
   border: 1px solid var(--border);
   border-radius: 999px;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   color: var(--muted);
 }
 
 .role-dates {
   color: var(--muted);
-  font-size: 0.95rem;
+  font-size: 1.05rem;
 }
 
 .role-org {
@@ -646,7 +746,7 @@ h3 {
   border: 1px solid var(--border);
   border-radius: 999px;
   background: var(--surface);
-  font-size: 0.95rem;
+  font-size: 1.05rem;
 }
 
 /* Contact */
@@ -665,7 +765,7 @@ h3 {
   border-top: 1px solid var(--border);
   padding: 1.5rem 0;
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 
 .site-footer p {
@@ -691,7 +791,7 @@ h3 {
 /* Skill groups */
 .skill-group {
   margin: 1.25rem 0 0.5rem;
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   color: var(--muted);
 }
 
