@@ -1,0 +1,800 @@
+/* Colors and spacing live here so the whole site can be re-themed in one place. */
+:root {
+  --bg: #fbfaf8;
+  --surface: #ffffff;
+  --text: #1f2328;
+  --muted: #5b636e;
+  --border: #e4e2dd;
+  --accent: #2f6f6a;
+  --accent-contrast: #ffffff;
+  --foundation: #4a5fa8;
+  --specialty: #2f6f6a;
+  --experience: #b0603a;
+  --highlight-bg: #eef5f4;
+  --radius: 10px;
+  --max-width: 840px;
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #141618;
+    --surface: #1c1f22;
+    --text: #e8e6e3;
+    --muted: #a0a7b0;
+    --border: #2d3237;
+    --accent: #6cc0b8;
+    --accent-contrast: #0f1a19;
+    --foundation: #93a6ec;
+    --specialty: #6cc0b8;
+    --experience: #e59a73;
+    --highlight-bg: #1d2a29;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 4.5rem;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 1.1875rem;
+  line-height: 1.65;
+}
+
+a {
+  color: var(--accent);
+}
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.skip-link {
+  position: absolute;
+  left: -999px;
+}
+
+.skip-link:focus {
+  left: 1rem;
+  top: 1rem;
+  z-index: 10;
+  background: var(--surface);
+  padding: 0.5rem 0.75rem;
+}
+
+/* Header and navigation */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: color-mix(in srgb, var(--bg) 90%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 3.5rem;
+  flex-wrap: wrap;
+}
+
+.nav-brand {
+  font-weight: 700;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 1.05rem;
+}
+
+.nav-links a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.nav-links a:hover,
+.nav-links a:focus-visible {
+  color: var(--text);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Hero */
+.hero {
+  padding-top: 4rem;
+  padding-bottom: 1rem;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--muted);
+}
+
+.hero h1 {
+  margin: 0.25rem 0 0.5rem;
+  font-size: clamp(2.5rem, 8vw, 4rem);
+  line-height: 1.1;
+}
+
+.headline {
+  margin: 0;
+  max-width: 36rem;
+  font-size: 1.4rem;
+  color: var(--muted);
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.75rem;
+}
+
+.button {
+  display: inline-block;
+  padding: 0.6rem 1.1rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--accent-contrast);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.button-ghost {
+  background: transparent;
+  color: var(--accent);
+}
+
+/* Mind map */
+.map-section {
+  padding-bottom: 2.5rem;
+}
+
+/* Without JavaScript the map's source list shows as a plain outline. */
+.mindmap-outline {
+  margin: 1rem auto 1.5rem;
+  padding-left: 2.25rem;
+}
+
+.mindmap-outline > li {
+  margin-top: 0.5rem;
+  font-weight: 600;
+}
+
+.mindmap-outline ul {
+  font-weight: 400;
+}
+
+.mindmap-outline small {
+  margin-left: 0.5rem;
+  color: var(--muted);
+}
+
+.mindmap {
+  position: relative;
+}
+
+.mindmap.is-ready {
+  height: min(72vh, 640px);
+  min-height: 420px;
+  margin: 1rem 0 0.5rem;
+  border-block: 1px solid var(--border);
+  background-color: var(--surface);
+  background-image: radial-gradient(var(--border) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+.mindmap-viewport {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  touch-action: none;
+  cursor: grab;
+}
+
+.is-dragging .mindmap-viewport {
+  cursor: grabbing;
+}
+
+/* The world is the zoomable layer; its origin is the viewport center. */
+.mindmap-world {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  transform-origin: 0 0;
+}
+
+.mindmap-world.is-animating {
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.mindmap-lines {
+  position: absolute;
+  overflow: visible;
+  width: 1px;
+  height: 1px;
+}
+
+.mindmap-lines path {
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  transition: opacity 0.4s, stroke-width 0.3s;
+}
+
+.line-foundation { stroke: var(--foundation); }
+.line-specialty { stroke: var(--specialty); }
+.line-experience { stroke: var(--experience); }
+
+.topic-line {
+  opacity: 0.45;
+}
+
+.topic-line.is-active {
+  opacity: 1;
+  stroke-width: 4;
+}
+
+.detail-line {
+  opacity: 0;
+  stroke-dasharray: 4 6;
+}
+
+.detail-line.is-open {
+  opacity: 0.8;
+}
+
+.sub-line {
+  opacity: 0;
+  stroke-width: 1.75;
+}
+
+.sub-line.is-open {
+  opacity: 0.7;
+}
+
+.node {
+  --node-color: var(--accent);
+  position: absolute;
+  transform: translate(-50%, -50%);
+  /* The world layer is 0px wide, so size nodes by their content rather than their container. */
+  width: max-content;
+  padding: 0.6rem 1rem;
+  border: 2px solid var(--node-color);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.25;
+  text-align: center;
+  white-space: nowrap;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 0.06);
+  transition: background 0.2s, color 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+button.node {
+  cursor: pointer;
+}
+
+button.node:hover,
+button.node:focus-visible {
+  transform: translate(-50%, -50%) scale(1.08);
+  box-shadow: 0 6px 18px rgb(0 0 0 / 0.12);
+}
+
+button.node:focus-visible {
+  outline: 3px solid var(--node-color);
+  outline-offset: 3px;
+}
+
+.node-topic.is-active {
+  background: var(--node-color);
+  color: var(--bg);
+}
+
+/* When a topic is open, the other topics step back. */
+/* Faded nodes stay opaque so the lines behind them don't show through. */
+.has-active .node-topic:not(.is-active),
+.node-detail.is-open.is-dimmed {
+  border-color: color-mix(in srgb, var(--node-color) 35%, var(--surface));
+  color: color-mix(in srgb, var(--text) 40%, var(--surface));
+  box-shadow: none;
+}
+
+.node-detail.is-dimmed span {
+  color: color-mix(in srgb, var(--node-color) 45%, var(--surface));
+}
+
+.node-detail.is-dimmed .branch-mark {
+  background: color-mix(in srgb, var(--node-color) 40%, var(--surface));
+}
+
+.has-active .topic-line:not(.is-active) {
+  opacity: 0.15;
+}
+
+.node-center {
+  --node-color: var(--text);
+  z-index: 1;
+  padding: 1.1rem 1.6rem;
+  background: var(--text);
+  color: var(--bg);
+  font-size: 1.5rem;
+}
+
+.node-detail {
+  z-index: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  max-width: none;
+  padding: 0.55rem 0.9rem;
+  border-width: 1.5px;
+  border-radius: 14px;
+  font-size: 1.05rem;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0.4);
+  transition: left 0.5s cubic-bezier(0.22, 1, 0.36, 1), top 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.35s, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.node-detail.is-open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+button.node-detail {
+  cursor: pointer;
+}
+
+.node-detail.has-branches {
+  padding-right: 2.1rem;
+}
+
+/* The small +/− badge on details that branch further. */
+.branch-mark {
+  position: absolute;
+  right: 0.55rem;
+  top: 50%;
+  display: grid;
+  place-items: center;
+  width: 1.15rem;
+  height: 1.15rem;
+  margin-top: -0.575rem;
+  border-radius: 50%;
+  background: var(--node-color);
+  color: var(--surface);
+  font-style: normal;
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.branch-mark::before {
+  content: "+";
+}
+
+.node-detail.is-expanded .branch-mark::before {
+  content: "−";
+}
+
+.node-detail.is-expanded {
+  background: color-mix(in srgb, var(--node-color) 14%, var(--surface));
+}
+
+.node-sub {
+  z-index: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 0.4rem 0.85rem;
+  border-width: 1.5px;
+  border-style: dashed;
+  border-radius: 999px;
+  font-size: 1rem;
+  font-weight: 600;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0.4);
+  transition: left 0.5s cubic-bezier(0.22, 1, 0.36, 1), top 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.35s, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.node-sub.is-open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.node-sub span {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--node-color);
+}
+
+.node-detail span {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--node-color);
+}
+
+.node-topic,
+.node-center {
+  z-index: 1;
+}
+
+.node-foundation { --node-color: var(--foundation); }
+.node-specialty { --node-color: var(--specialty); }
+.node-experience { --node-color: var(--experience); }
+
+.map-controls {
+  position: absolute;
+  right: 0.75rem;
+  top: 0.75rem;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 0.08);
+}
+
+.map-controls button {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.map-controls button + button {
+  border-top: 1px solid var(--border);
+}
+
+.map-controls button:hover,
+.map-controls button:focus-visible {
+  background: var(--highlight-bg);
+}
+
+.map-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 0.75rem;
+  z-index: 2;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100% - 1.5rem);
+  margin: 0;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface) 85%, transparent);
+  color: var(--muted);
+  font-size: 0.95rem;
+  text-align: center;
+  pointer-events: none;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem 1.25rem;
+  list-style: none;
+  margin: 0.5rem 0 1.25rem;
+  padding: 0;
+  font-size: 1rem;
+  color: var(--muted);
+}
+
+.swatch {
+  display: inline-block;
+  width: 0.7rem;
+  height: 0.7rem;
+  margin-right: 0.4rem;
+  border-radius: 50%;
+  vertical-align: middle;
+}
+
+.swatch-foundation { background: var(--foundation); }
+.swatch-specialty { background: var(--specialty); }
+.swatch-experience { background: var(--experience); }
+
+.topic-hint {
+  margin: 0;
+  text-align: center;
+  color: var(--muted);
+}
+
+.topic-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.2rem;
+  animation: panel-in 0.35s ease-out;
+}
+
+.topic-panel p {
+  margin: 0;
+}
+
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+@media (max-width: 560px) {
+  .mindmap.is-ready {
+    height: 60vh;
+    min-height: 380px;
+  }
+
+  .node-topic {
+    max-width: 8rem;
+    white-space: normal;
+  }
+
+  .node-detail,
+  .node-sub {
+    max-width: 10rem;
+    white-space: normal;
+  }
+
+  .map-hint {
+    bottom: 0.5rem;
+    font-size: 0.85rem;
+  }
+}
+
+.hint-touch {
+  display: none;
+}
+
+@media (pointer: coarse) {
+  .hint-touch {
+    display: inline;
+  }
+
+  .hint-mouse {
+    display: none;
+  }
+}
+
+/* Scroll-in animation, set up by reveal.js */
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* Sections */
+.section {
+  padding-top: 2.5rem;
+  padding-bottom: 2.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.section h2 {
+  margin-top: 0;
+  font-size: 1.85rem;
+}
+
+h3 {
+  margin: 0 0 0.25rem;
+  font-size: 1.3rem;
+}
+
+/* Experience timeline */
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.role {
+  display: grid;
+  grid-template-columns: 10.5rem 1fr;
+  gap: 1rem;
+  padding: 1rem 0;
+}
+
+.role + .role {
+  border-top: 1px dashed var(--border);
+}
+
+.role {
+  margin: 0 -0.75rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  border-radius: var(--radius);
+  transition: background 0.2s;
+}
+
+.role.is-highlighted {
+  background: var(--highlight-bg);
+}
+
+.role-topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  list-style: none;
+  margin: 0.4rem 0 0;
+  padding: 0;
+}
+
+.role-topics li {
+  padding: 0 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.role-dates {
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
+.role-org {
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.role-body ul {
+  margin: 0.25rem 0 0;
+  padding-left: 1.2rem;
+}
+
+@media (max-width: 560px) {
+  .role {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+}
+
+/* Project cards */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.2rem;
+}
+
+.card p {
+  margin: 0;
+  color: var(--muted);
+}
+
+/* Skills */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tags li {
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 1.05rem;
+}
+
+/* Contact */
+.contact-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-weight: 600;
+}
+
+/* Footer */
+.site-footer {
+  border-top: 1px solid var(--border);
+  padding: 1.5rem 0;
+  color: var(--muted);
+  font-size: 1rem;
+}
+
+.site-footer p {
+  margin: 0;
+}
+
+/* Education */
+.edu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.edu li + li {
+  margin-top: 1rem;
+}
+
+.edu p {
+  margin: 0;
+  color: var(--muted);
+}
+
+/* Skill groups */
+.skill-group {
+  margin: 1.25rem 0 0.5rem;
+  font-size: 1.1rem;
+  color: var(--muted);
+}
+
+.skill-group:first-of-type {
+  margin-top: 0;
+}
