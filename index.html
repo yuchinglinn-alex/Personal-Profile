@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Alex | Profile</title>
+  <meta name="description" content="Alex's professional profile: experience, projects, and skills.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <nav class="nav container" aria-label="Primary">
+      <a class="nav-brand" href="#top">Alex</a>
+      <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main">
+    <!-- Hero: name and one-line headline -->
+    <section id="top" class="hero container">
+      <p class="eyebrow">Hello, I'm</p>
+      <h1>Alex</h1>
+      <p class="headline">Your role or professional headline goes here.</p>
+      <div class="hero-actions">
+        <a class="button" href="#contact">Get in touch</a>
+        <a class="button button-ghost" href="#experience">See my work</a>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section id="about" class="section container">
+      <h2>About</h2>
+      <p>A short paragraph about who you are, what you do, and what you care about in your work.</p>
+    </section>
+
+    <!-- Experience: copy an <li class="role"> block for each position, newest first -->
+    <section id="experience" class="section container">
+      <h2>Experience</h2>
+      <ol class="timeline">
+        <li class="role">
+          <div class="role-meta">
+            <span class="role-dates">2023 – Present</span>
+          </div>
+          <div class="role-body">
+            <h3>Job Title <span class="role-org">· Company</span></h3>
+            <ul>
+              <li>Key achievement or responsibility.</li>
+              <li>Another highlight, ideally with a measurable result.</li>
+            </ul>
+          </div>
+        </li>
+        <li class="role">
+          <div class="role-meta">
+            <span class="role-dates">2020 – 2023</span>
+          </div>
+          <div class="role-body">
+            <h3>Job Title <span class="role-org">· Company</span></h3>
+            <ul>
+              <li>Key achievement or responsibility.</li>
+            </ul>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <!-- Projects: copy an <article class="card"> block for each project -->
+    <section id="projects" class="section container">
+      <h2>Projects</h2>
+      <div class="cards">
+        <article class="card">
+          <h3>Project name</h3>
+          <p>One or two sentences on what it was and the impact it had.</p>
+        </article>
+        <article class="card">
+          <h3>Project name</h3>
+          <p>One or two sentences on what it was and the impact it had.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Skills -->
+    <section id="skills" class="section container">
+      <h2>Skills</h2>
+      <ul class="tags">
+        <li>Skill one</li>
+        <li>Skill two</li>
+        <li>Skill three</li>
+      </ul>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="section container">
+      <h2>Contact</h2>
+      <p>The best ways to reach me:</p>
+      <ul class="contact-links">
+        <li><a href="mailto:you@example.com">Email</a></li>
+        <li><a href="https://www.linkedin.com/">LinkedIn</a></li>
+        <li><a href="https://github.com/yuchinglinn-alex">GitHub</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p class="container">© <span id="year">2026</span> Alex</p>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
