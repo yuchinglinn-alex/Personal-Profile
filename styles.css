@@ -219,6 +219,8 @@ a {
   position: absolute;
   inset: 0;
   overflow: hidden;
+  /* clip, unlike hidden, can't be scrolled by focus or scrollIntoView, which would shift the map. */
+  overflow: clip;
   touch-action: none;
   cursor: grab;
 }
@@ -342,6 +344,15 @@ button.node:focus-visible {
 
 .node-detail.is-dimmed .branch-mark {
   background: color-mix(in srgb, var(--node-color) 40%, var(--surface));
+}
+
+/* While a detail is open, its siblings all but disappear so its branches read clearly. */
+.node-detail.is-open.is-dimmed {
+  opacity: 0.22;
+}
+
+.detail-line.is-open.is-dimmed {
+  opacity: 0.15;
 }
 
 .has-active .topic-line:not(.is-active) {

@@ -378,6 +378,7 @@
     topics.forEach(function (topic) {
       topic.details.forEach(function (d) {
         d.node.classList.toggle('is-dimmed', !!activeDetail && d !== activeDetail);
+        d.path.classList.toggle('is-dimmed', !!activeDetail && d !== activeDetail);
       });
     });
     if (activeDetail) {
@@ -539,6 +540,12 @@
   }, { passive: false });
 
   // ---- Start --------------------------------------------------------------
+
+  // Older browsers without overflow: clip can still scroll the viewport when a node gets focus.
+  viewport.addEventListener('scroll', function () {
+    viewport.scrollTop = 0;
+    viewport.scrollLeft = 0;
+  });
 
   fitAll(false);
   var pending;
