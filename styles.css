@@ -665,6 +665,66 @@ button.node-detail {
   color: var(--accent);
 }
 
+/* A compass rose in the corner, just for fun. Its needle wobbles while the map is dragged. */
+.map-compass {
+  position: absolute;
+  left: 0.75rem;
+  top: 0.75rem;
+  z-index: 2;
+  width: 4.5rem;
+  height: 4.5rem;
+  overflow: visible;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 6px rgb(0 0 0 / 0.12));
+}
+
+.map-compass[hidden] {
+  display: none;
+}
+
+.compass-face {
+  fill: var(--surface);
+  stroke: var(--road-edge);
+  stroke-width: 2;
+}
+
+.compass-ring {
+  fill: none;
+  stroke: var(--road-mark);
+  stroke-width: 1.2;
+  stroke-dasharray: 3 4;
+}
+
+.compass-north { fill: var(--accent); }
+.compass-south { fill: var(--muted); }
+.compass-side { fill: var(--road-edge); }
+.compass-pin { fill: var(--surface); stroke: var(--text); stroke-width: 1.5; }
+
+.compass-n {
+  fill: var(--text);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: central;
+  paint-order: stroke;
+  stroke: var(--surface);
+  stroke-width: 4px;
+}
+
+.compass-needle {
+  transform-origin: 0 0;
+}
+
+.is-dragging .compass-needle {
+  animation: compass-wobble 0.9s ease-in-out infinite;
+}
+
+@keyframes compass-wobble {
+  25% { transform: rotate(14deg); }
+  75% { transform: rotate(-10deg); }
+}
+
 /* Topics glide out to their wider ring when everything expands. */
 .node-topic {
   transition: left 0.5s cubic-bezier(0.22, 1, 0.36, 1), top 0.5s cubic-bezier(0.22, 1, 0.36, 1),

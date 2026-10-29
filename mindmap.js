@@ -94,6 +94,7 @@
   map.insertBefore(viewport, source);
   source.hidden = true;
   controls.hidden = false;
+  map.querySelector('.map-compass').removeAttribute('hidden');
   hint.hidden = false;
   map.classList.add('is-ready');
 
