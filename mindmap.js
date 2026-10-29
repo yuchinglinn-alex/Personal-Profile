@@ -11,6 +11,7 @@
   var hint = map.querySelector('.map-hint');
   var panels = document.querySelectorAll('[data-topic-panel]');
   var roles = document.querySelectorAll('.role[data-topics]');
+  var resumeBox = document.querySelector('.resume-match');
   var SVG_NS = 'http://www.w3.org/2000/svg';
 
   // World layout, in px before zoom.
@@ -36,6 +37,8 @@
       return {
         label: item.firstChild.textContent.trim(),
         note: small ? small.textContent.trim() : '',
+        // Ids of the resume lines this item comes from; [] means not on the resume, null means untagged.
+        source: item.hasAttribute('data-source') ? item.dataset.source.split(/\s+/).filter(Boolean) : null,
         items: readItems(item.querySelector(':scope > ul'))
       };
     });
@@ -133,17 +136,18 @@
       detail.path = addPath(curve(topic.x, topic.y, detail.x, detail.y), 'detail-line', topic.group);
 
       var branches = detail.items.length > 0;
-      var el = document.createElement(branches ? 'button' : 'div');
+      // Every detail is clickable: it shows its resume lines and, if it has any, its branches.
+      var el = document.createElement('button');
+      el.type = 'button';
+      el.tabIndex = -1;
       el.className = 'node node-detail node-' + topic.group;
       el.style.transitionDelay = j * 40 + 'ms';
       el.innerHTML = '<strong></strong>' + (detail.note ? '<span></span>' : '');
       el.querySelector('strong').textContent = detail.label;
       if (detail.note) el.querySelector('span').textContent = detail.note;
       if (branches) {
-        el.type = 'button';
         el.classList.add('has-branches');
         el.setAttribute('aria-expanded', 'false');
-        el.tabIndex = -1;
         var mark = document.createElement('i');
         mark.className = 'branch-mark';
         mark.setAttribute('aria-hidden', 'true');
@@ -363,11 +367,85 @@
 
   function showBranches(detail, open) {
     detail.node.classList.toggle('is-expanded', open);
-    detail.node.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (detail.items.length) detail.node.setAttribute('aria-expanded', open ? 'true' : 'false');
     detail.items.forEach(function (sub) {
       sub.node.classList.toggle('is-open', open);
       sub.path.classList.toggle('is-open', open);
       place(sub.node, open ? sub.x : detail.x, open ? sub.y : detail.y);
+    });
+  }
+
+  // ---- Resume cross-reference -------------------------------------------
+
+  var sourceLines = [];
+
+  // Where a resume line sits: its role, degree or skill group.
+  function contextOf(el) {
+    var holder = el.closest('.role, .edu > li');
+    if (holder) return holder.querySelector('h3').textContent.replace(/\s+/g, ' ').trim();
+    var group = el.previousElementSibling;
+    if (group && group.matches('.skill-group')) return 'Skills · ' + group.textContent;
+    return '';
+  }
+
+  function textOf(el) {
+    if (el.matches('ul')) {
+      return Array.prototype.map.call(el.children, function (li) { return li.textContent; }).join(' · ');
+    }
+    return el.textContent.trim();
+  }
+
+  function showSource(detail) {
+    sourceLines.forEach(function (el) { el.classList.remove('is-source'); });
+    sourceLines = [];
+    if (!resumeBox) return;
+    // The resume card takes the topic panel's place, right under the map.
+    panels.forEach(function (panel) {
+      panel.hidden = detail ? true : panel.dataset.topicPanel !== (active || 'none');
+    });
+    resumeBox.innerHTML = '';
+    resumeBox.hidden = !detail || !detail.source;
+    if (resumeBox.hidden) return;
+
+    var heading = document.createElement('h3');
+    heading.textContent = detail.label + ' on my resume';
+    resumeBox.appendChild(heading);
+
+    if (!detail.source.length) {
+      var none = document.createElement('p');
+      none.className = 'resume-none';
+      none.textContent = 'Not on my resume yet. This is an additional project, listed under Projects.';
+      resumeBox.appendChild(none);
+      return;
+    }
+
+    detail.source.forEach(function (id) {
+      var line = document.getElementById(id);
+      if (!line) return;
+      line.classList.add('is-source');
+      sourceLines.push(line);
+
+      var item = document.createElement('figure');
+      item.className = 'resume-line';
+      var where = document.createElement('figcaption');
+      where.textContent = contextOf(line);
+      var quote = document.createElement('blockquote');
+      quote.textContent = textOf(line);
+      var jump = document.createElement('button');
+      jump.type = 'button';
+      jump.className = 'resume-jump';
+      jump.textContent = 'Show it on the page ↓';
+      jump.addEventListener('click', function () {
+        line.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' });
+        line.classList.remove('is-flash');
+        // Restart the flash animation even if it ran before.
+        void line.offsetWidth;
+        line.classList.add('is-flash');
+      });
+      item.appendChild(where);
+      item.appendChild(quote);
+      item.appendChild(jump);
+      resumeBox.appendChild(item);
     });
   }
 
@@ -381,6 +459,7 @@
         d.path.classList.toggle('is-dimmed', !!activeDetail && d !== activeDetail);
       });
     });
+    showSource(activeDetail);
     if (activeDetail) {
       showBranches(activeDetail, true);
       focusOnDetail(activeDetail, true);
@@ -401,7 +480,7 @@
       topic.details.forEach(function (detail) {
         detail.node.classList.toggle('is-open', open);
         detail.path.classList.toggle('is-open', open);
-        if (detail.items.length) detail.node.tabIndex = open ? 0 : -1;
+        detail.node.tabIndex = open ? 0 : -1;
         place(detail.node, open ? detail.x : topic.x, open ? detail.y : topic.y);
       });
     });
@@ -429,7 +508,6 @@
       select(topic.id);
     });
     topic.details.forEach(function (detail) {
-      if (!detail.items.length) return;
       detail.node.addEventListener('click', function () {
         if (dragged) return;
         openDetail(detail);

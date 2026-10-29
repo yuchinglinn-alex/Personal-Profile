@@ -38,6 +38,8 @@
          data-group (foundation, specialty, experience) that sets its color. Each inner <li> is a
          detail that branches out when the topic is opened; <small> is its supporting line, and a
          nested <ul> inside a detail adds a third level that opens when the detail is clicked.
+         data-source on a detail lists the ids of the resume lines it comes from (empty means it
+         isn't on the resume); opening the detail quotes those lines.
          Without JavaScript the list shows as a plain outline. -->
     <section id="map" class="map-section" aria-labelledby="map-title">
       <h2 id="map-title" class="visually-hidden">How my experience connects</h2>
@@ -45,32 +47,32 @@
         <ul class="mindmap-outline container" data-mindmap-source>
           <li data-topic="mba" data-group="foundation">MBA
             <ul>
-              <li>National Chengchi University<small>International Marketing · 2019–21</small>
+              <li data-source="edu-mba">National Chengchi University<small>International Marketing · 2019–21</small>
                 <ul>
                   <li>International Marketing focus</li>
                   <li>Taipei, Taiwan</li>
                 </ul>
               </li>
-              <li>Thesis<small>Governance &amp; SDG performance</small>
+              <li data-source="edu-mba-thesis">Thesis<small>Governance &amp; SDG performance</small>
                 <ul>
                   <li>Corporate governance</li>
                   <li>SDG performance</li>
                   <li>Types of shareholders</li>
                 </ul>
               </li>
-              <li>Scholarship<small>Sustainable Development &amp; Social Care</small></li>
+              <li data-source="edu-mba-scholarship">Scholarship<small>Sustainable Development &amp; Social Care</small></li>
             </ul>
           </li>
           <li data-topic="tech" data-group="foundation">Tech background
             <ul>
-              <li>UIUC MS, Tech Management<small>Business Data Analytics · 2021–22</small>
+              <li data-source="edu-ms">UIUC MS, Tech Management<small>Business Data Analytics · 2021–22</small>
                 <ul>
                   <li>Gies College of Business</li>
                   <li>Business Data Analytics focus</li>
                 </ul>
               </li>
-              <li>Power BI certified<small>Microsoft Data Analyst Associate</small></li>
-              <li>AI automation<small>Power Automate · OCR · LLMs</small>
+              <li data-source="skill-cert">Power BI certified<small>Microsoft Data Analyst Associate</small></li>
+              <li data-source="r-oec-auto">AI automation<small>Power Automate · OCR · LLMs</small>
                 <ul>
                   <li>AI document model training</li>
                   <li>OCR extraction</li>
@@ -78,7 +80,7 @@
                   <li>Used across 10+ offices</li>
                 </ul>
               </li>
-              <li>Python · SQL · AWS<small>Everyday toolkit</small>
+              <li data-source="skills-analytics skills-platforms">Python · SQL · AWS<small>Everyday toolkit</small>
                 <ul>
                   <li>Python modeling</li>
                   <li>SQL</li>
@@ -90,7 +92,7 @@
           </li>
           <li data-topic="credit" data-group="specialty">Credit
             <ul>
-              <li>5Cs credit risk model<small>−15% default rate</small>
+              <li data-source="r-oec-5cs">5Cs credit risk model<small>−15% default rate</small>
                 <ul>
                   <li>D&amp;B score</li>
                   <li>Payment history</li>
@@ -98,19 +100,19 @@
                   <li>Collateral</li>
                 </ul>
               </li>
-              <li>Default prediction<small>73% accuracy on late payments</small>
+              <li data-source="r-oec-default">Default prediction<small>73% accuracy on late payments</small>
                 <ul>
                   <li>Transaction patterns</li>
                   <li>Macroeconomic factors</li>
                   <li>Built in Python</li>
                 </ul>
               </li>
-              <li>Targeted collections<small>−8% delinquencies</small>
+              <li data-source="r-oec-default">Targeted collections<small>−8% delinquencies</small>
                 <ul>
                   <li>Guided by late-payment predictions</li>
                 </ul>
               </li>
-              <li>Risk tiering<small>1,000+ customers</small>
+              <li data-source="r-oec-5cs">Risk tiering<small>1,000+ customers</small>
                 <ul>
                   <li>Scored with the 5Cs model</li>
                   <li>Automated tier assignment</li>
@@ -122,7 +124,7 @@
           </li>
           <li data-topic="data" data-group="specialty">Data Analytics
             <ul>
-              <li>Power BI dashboards<small>50+ analyst hours saved monthly</small>
+              <li data-source="r-oec-bi">Power BI dashboards<small>50+ analyst hours saved monthly</small>
                 <ul>
                   <li>Shipment volume</li>
                   <li>Portfolio risk</li>
@@ -130,27 +132,27 @@
                   <li>Key risk indicators</li>
                 </ul>
               </li>
-              <li>CRM analytics<small>8,000+ prospects</small>
+              <li data-source="r-tx-crm">CRM analytics<small>8,000+ prospects</small>
                 <ul>
                   <li>Weekly CRM reviews</li>
                   <li>Targeted campaigns</li>
                   <li>15% open · 10% click-to-open</li>
                 </ul>
               </li>
-              <li>Nielsen &amp; Mintel<small>100+ products tracked</small>
+              <li data-source="r-jj-social">Nielsen &amp; Mintel<small>100+ products tracked</small>
                 <ul>
                   <li>Consumer behavior reports</li>
                   <li>Social listening meetings</li>
                 </ul>
               </li>
-              <li>P&amp;L analysis<small>Monthly, for sales strategy</small>
+              <li data-source="r-jj-pl">P&amp;L analysis<small>Monthly, for sales strategy</small>
                 <ul>
                   <li>Nielsen sales data</li>
                   <li>Campaign strategy</li>
                   <li>Listerine +10% sales</li>
                 </ul>
               </li>
-              <li>Payment forecast<small>Freightos index → freight payments</small>
+              <li data-source="">Payment forecast<small>Freightos index → freight payments</small>
                 <ul>
                   <li>Web-scraped Freightos index prices</li>
                   <li>Freight rate trends</li>
@@ -161,28 +163,28 @@
           </li>
           <li data-topic="digital" data-group="specialty">Digital Marketing
             <ul>
-              <li>Salesforce Marketing Cloud<small>+15% customer retention</small>
+              <li data-source="r-tx-crm r-jj-sfmc">Salesforce Marketing Cloud<small>+15% customer retention</small>
                 <ul>
                   <li>Targeted campaigns</li>
                   <li>15% open rate</li>
                   <li>10% click-to-open rate</li>
                 </ul>
               </li>
-              <li>Social strategy<small>+10% followers, 6% engagement</small>
+              <li data-source="r-tx-social">Social strategy<small>+10% followers, 6% engagement</small>
                 <ul>
                   <li>Competitive analysis</li>
                   <li>Facebook &amp; LinkedIn posts</li>
                   <li>Market trend insights</li>
                 </ul>
               </li>
-              <li>Website UAT<small>5+ product sites</small>
+              <li data-source="r-jj-uat">Website UAT<small>5+ product sites</small>
                 <ul>
                   <li>Test plans</li>
                   <li>Scenarios &amp; test cases</li>
                   <li>Run in JIRA</li>
                 </ul>
               </li>
-              <li>SaaS launch content<small>+7% customer satisfaction</small>
+              <li data-source="r-tx-saas">SaaS launch content<small>+7% customer satisfaction</small>
                 <ul>
                   <li>Demo videos</li>
                   <li>Customer resources</li>
@@ -193,19 +195,19 @@
           </li>
           <li data-topic="brand" data-group="experience">Brand Marketing
             <ul>
-              <li>Aveeno<small>+25% social engagement YoY</small>
+              <li data-source="r-jj-social">Aveeno<small>+25% social engagement YoY</small>
                 <ul>
                   <li>Social listening</li>
                   <li>Consumer insights</li>
                 </ul>
               </li>
-              <li>Listerine<small>+10% convenience-store sales</small>
+              <li data-source="r-jj-pl">Listerine<small>+10% convenience-store sales</small>
                 <ul>
                   <li>Monthly P&amp;L with Nielsen</li>
                   <li>Convenience-store channel</li>
                 </ul>
               </li>
-              <li>Social listening<small>100+ products</small>
+              <li data-source="r-jj-social">Social listening<small>100+ products</small>
                 <ul>
                   <li>Nielsen &amp; Mintel data</li>
                   <li>Internal &amp; external products</li>
@@ -219,7 +221,7 @@
           <button type="button" data-zoom="out" aria-label="Zoom out">−</button>
           <button type="button" data-zoom="reset" aria-label="Show the whole map">⤢</button>
         </div>
-        <p class="map-hint" hidden>Tap a topic or + to open it · drag to move · <span class="hint-touch">pinch to zoom</span><span class="hint-mouse">Ctrl + scroll to zoom</span></p>
+        <p class="map-hint" hidden>Tap a topic, then a detail to see it on my resume · drag to move · <span class="hint-touch">pinch to zoom</span><span class="hint-mouse">Ctrl + scroll to zoom</span></p>
       </div>
 
       <div class="container">
@@ -256,6 +258,9 @@
             <p>At Johnson &amp; Johnson I led consumer behavior and social listening work across 100+ products, growing Aveeno's social engagement by 25% year over year and helping lift Listerine convenience-store sales by 10%.</p>
           </div>
         </div>
+
+        <!-- Filled by mindmap.js with the resume lines behind the open map branch. -->
+        <div class="resume-match" aria-live="polite" hidden></div>
       </div>
     </section>
 
@@ -278,11 +283,11 @@
           <div class="role-body">
             <h3>Senior Credit Data Analyst <span class="role-org">· OEC Freight, New York</span></h3>
             <ul>
-              <li>Architected automation pipelines in Power Automate, combining AI document model training, OCR extraction and prompt-engineered LLM workflows to automate financial reporting and decision support across 10+ offices.</li>
-              <li>Developed a rule-based 5Cs credit risk model (D&amp;B score, payment history, credit status, collateral) that automates risk tiers for 1,000+ customers, reducing default rates by 15%.</li>
-              <li>Built a Python default prediction model on transaction patterns and macroeconomic factors, reaching 73% accuracy on late payments and helping cut delinquencies by 8%.</li>
-              <li>Created Power BI dashboards for shipment volume, portfolio risk and payment trends, automating 50+ analyst hours each month.</li>
-              <li>Wrote and maintained the business requirements document for real-time dashboards, working with IT on system requirements and database integration.</li>
+              <li id="r-oec-auto">Architected automation pipelines in Power Automate, combining AI document model training, OCR extraction and prompt-engineered LLM workflows to automate financial reporting and decision support across 10+ offices.</li>
+              <li id="r-oec-5cs">Developed a rule-based 5Cs credit risk model (D&amp;B score, payment history, credit status, collateral) that automates risk tiers for 1,000+ customers, reducing default rates by 15%.</li>
+              <li id="r-oec-default">Built a Python default prediction model on transaction patterns and macroeconomic factors, reaching 73% accuracy on late payments and helping cut delinquencies by 8%.</li>
+              <li id="r-oec-bi">Created Power BI dashboards for shipment volume, portfolio risk and payment trends, automating 50+ analyst hours each month.</li>
+              <li id="r-oec-brd">Wrote and maintained the business requirements document for real-time dashboards, working with IT on system requirements and database integration.</li>
             </ul>
           </div>
         </li>
@@ -293,9 +298,9 @@
           <div class="role-body">
             <h3>Marketing Analytics Intern <span class="role-org">· TechExcel, Mountain View</span></h3>
             <ul>
-              <li>Ran competitive social media analysis and launched a Facebook and LinkedIn strategy, growing followers by 10% with a 6% engagement rate.</li>
-              <li>Used CRM analytics on 8,000+ prospects to build Salesforce Marketing Cloud campaigns, increasing retention by 15% with a 15% open rate and 10% click-to-open rate.</li>
-              <li>Worked with IT, customer success and APAC teams on demo videos and resources for a new SaaS product line, improving customer satisfaction by 7%.</li>
+              <li id="r-tx-social">Ran competitive social media analysis and launched a Facebook and LinkedIn strategy, growing followers by 10% with a 6% engagement rate.</li>
+              <li id="r-tx-crm">Used CRM analytics on 8,000+ prospects to build Salesforce Marketing Cloud campaigns, increasing retention by 15% with a 15% open rate and 10% click-to-open rate.</li>
+              <li id="r-tx-saas">Worked with IT, customer success and APAC teams on demo videos and resources for a new SaaS product line, improving customer satisfaction by 7%.</li>
             </ul>
           </div>
         </li>
@@ -306,10 +311,10 @@
           <div class="role-body">
             <h3>Digital Marketing Assistant <span class="role-org">· Johnson &amp; Johnson, Taipei</span></h3>
             <ul>
-              <li>Led consumer behavior reports and social listening for 100+ products using Nielsen and Mintel, increasing Aveeno's social engagement by 25% year over year.</li>
-              <li>Analyzed Salesforce Marketing Cloud campaign data and built reports that turned marketing trends into actionable insights.</li>
-              <li>Led UAT in JIRA for 5+ product homepage sites, from test plans to test cases, to deliver on business requirements and on time.</li>
-              <li>Analyzed P&amp;L with Nielsen data each month to shape campaign strategy, lifting Listerine convenience-store sales by 10%.</li>
+              <li id="r-jj-social">Led consumer behavior reports and social listening for 100+ products using Nielsen and Mintel, increasing Aveeno's social engagement by 25% year over year.</li>
+              <li id="r-jj-sfmc">Analyzed Salesforce Marketing Cloud campaign data and built reports that turned marketing trends into actionable insights.</li>
+              <li id="r-jj-uat">Led UAT in JIRA for 5+ product homepage sites, from test plans to test cases, to deliver on business requirements and on time.</li>
+              <li id="r-jj-pl">Analyzed P&amp;L with Nielsen data each month to shape campaign strategy, lifting Listerine convenience-store sales by 10%.</li>
             </ul>
           </div>
         </li>
@@ -348,7 +353,7 @@
           <h3>Portfolio risk dashboards</h3>
           <p>Power BI views of shipments, portfolio risk and payment trends that save 50+ analyst hours a month.</p>
         </article>
-        <article class="card">
+        <article class="card" id="proj-forecast">
           <h3>Freight payment forecast</h3>
           <p>Web-scrapes Freightos freight index prices and uses the rate trends to predict upcoming freight payments.</p>
         </article>
@@ -361,11 +366,13 @@
       <ul class="edu">
         <li>
           <h3>MS, Technology Management <span class="role-org">· Business Data Analytics</span></h3>
-          <p>University of Illinois Urbana-Champaign, Gies College of Business · 2021–2022</p>
+          <p id="edu-ms">University of Illinois Urbana-Champaign, Gies College of Business · 2021–2022</p>
         </li>
         <li>
           <h3>MBA <span class="role-org">· International Marketing</span></h3>
-          <p>National Chengchi University, Taipei · 2019–2021</p>
+          <p id="edu-mba">National Chengchi University, Taipei · 2019–2021</p>
+          <p id="edu-mba-scholarship">Scholarship for Sustainable Development and Social Care</p>
+          <p id="edu-mba-thesis">Thesis: Correlations of Corporate Governance, Performance of Sustainable Development Goals, and Types of Shareholders</p>
         </li>
         <li>
           <h3>Bachelor, International Program of Agribusiness</h3>
@@ -378,7 +385,7 @@
     <section id="skills" class="section container">
       <h2>Skills</h2>
       <h3 class="skill-group">Analytics &amp; BI</h3>
-      <ul class="tags">
+      <ul class="tags" id="skills-analytics">
         <li>Python</li>
         <li>SQL</li>
         <li>Power BI</li>
@@ -386,7 +393,7 @@
         <li>SPSS</li>
       </ul>
       <h3 class="skill-group">Platforms &amp; automation</h3>
-      <ul class="tags">
+      <ul class="tags" id="skills-platforms">
         <li>Power Automate</li>
         <li>AWS (EC2, S3)</li>
         <li>Salesforce Marketing Cloud</li>
@@ -400,7 +407,7 @@
       </ul>
       <h3 class="skill-group">Certification</h3>
       <ul class="tags">
-        <li>Microsoft Certified: Power BI Data Analyst Associate</li>
+        <li id="skill-cert">Microsoft Certified: Power BI Data Analyst Associate</li>
       </ul>
     </section>
 

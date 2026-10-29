@@ -12,7 +12,7 @@ Alex's personal profile website, a single page built with plain HTML and CSS and
 
 ## Editing content
 
-Open `index.html` and replace the placeholder text. To add a job, copy one `<li class="role">` block inside the Experience section. To add a project, copy one `<article class="card">` block. Mind map topics and their details live in the nested list inside the `#map` section. Tag a role with mind map topics using its `data-topics` attribute (for example `data-topics="credit data"`), and edit each topic's description in its `data-topic-panel` block.
+Open `index.html` and replace the placeholder text. To add a job, copy one `<li class="role">` block inside the Experience section. To add a project, copy one `<article class="card">` block. Mind map topics and their details live in the nested list inside the `#map` section. Tag a role with mind map topics using its `data-topics` attribute (for example `data-topics="credit data"`), and edit each topic's description in its `data-topic-panel` block. Each map detail's `data-source` lists the ids of the resume lines it comes from (leave it empty for something not on the resume), so opening that detail quotes those lines.
 
 ## Previewing locally
 
