@@ -1,46 +1,36 @@
 /* Colors and spacing live here so the whole site can be re-themed in one place.
-   Theme: warm creative (peach, mint and periwinkle; rounded shapes). */
+   Theme: editorial (cream paper, serif headings, navy, forest green and brick red). */
 :root {
-  --bg: #fff7f0;
-  --surface: #ffffff;
-  --text: #3b2f2f;
-  --muted: #7d6b66;
-  --border: #f1dccf;
-  --accent: #c95a43;
+  --bg: #f6f1e7;
+  --surface: #fffdf8;
+  --text: #2a2420;
+  --muted: #6b6058;
+  --border: #e2d8c8;
+  --accent: #8a3b2e;
   --accent-contrast: #ffffff;
-  --foundation: #7c83db;
-  --specialty: #3fa197;
-  --experience: #e8794a;
-  --highlight-bg: #fdeee4;
-  --glow-1: #ffd9c7;
-  --glow-2: #d9f0ec;
-  --map-bg: #fffaf5;
-  --map-dot: #f3d9c9;
-  --card-shadow: rgb(226 114 91 / 0.12);
-  --radius: 20px;
+  --foundation: #3d5a80;
+  --specialty: #4f6f52;
+  --experience: #8a3b2e;
+  --highlight-bg: #f1e7d6;
+  --radius: 4px;
   --max-width: 840px;
-  --font: "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-script: "Caveat", "Segoe Print", "Bradley Hand", cursive;
+  --font: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #1f1816;
-    --surface: #2a211e;
-    --text: #f5e9e2;
-    --muted: #bba79e;
-    --border: #3d302b;
-    --accent: #f29a83;
-    --accent-contrast: #2a1712;
-    --foundation: #a3a9f0;
-    --specialty: #74cdc3;
-    --experience: #f5a27c;
-    --highlight-bg: #33251f;
-    --glow-1: #4a2a20;
-    --glow-2: #1e3532;
-    --map-bg: #241c19;
-    --map-dot: #3d302b;
-    --card-shadow: rgb(0 0 0 / 0.3);
+    --bg: #1b1815;
+    --surface: #24201c;
+    --text: #efe7da;
+    --muted: #b3a797;
+    --border: #3a332c;
+    --accent: #e09a85;
+    --accent-contrast: #24120d;
+    --foundation: #9db4d8;
+    --specialty: #9cc29f;
+    --experience: #e09a85;
+    --highlight-bg: #2e2720;
   }
 }
 
@@ -930,42 +920,38 @@ h3 {
   margin-top: 0;
 }
 
-/* Warm creative theme details */
-body {
-  background:
-    radial-gradient(circle at 80% 8%, var(--glow-1) 0, transparent 28%),
-    radial-gradient(circle at 60% 18%, var(--glow-2) 0, transparent 20%) no-repeat,
-    var(--bg);
+/* Editorial theme details */
+h1,
+h2,
+h3,
+.nav-brand,
+.node-center {
+  font-family: var(--font-display);
+}
+
+.hero h1 {
+  font-size: clamp(2.8rem, 8vw, 4.6rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .eyebrow {
-  font-family: var(--font-script);
-  font-size: 2rem;
-  line-height: 1.2;
-  color: var(--accent);
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-style: italic;
 }
 
-.hero h1,
 .section h2 {
-  font-weight: 900;
-}
-
-.section h2::after {
-  content: " \2726";
-  color: var(--accent);
+  display: inline-block;
+  font-size: 2.2rem;
+  padding-bottom: 0.15rem;
+  border-bottom: 2px solid var(--text);
 }
 
 .mindmap.is-ready {
-  background-color: var(--map-bg);
-  background-image: radial-gradient(var(--map-dot) 1.5px, transparent 1.5px);
+  background-image: none;
 }
 
 .node {
-  border-width: 3px;
-}
-
-.card,
-.role.is-highlighted {
-  border-radius: var(--radius);
-  box-shadow: 0 6px 20px var(--card-shadow);
+  box-shadow: none;
 }
