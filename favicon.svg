@@ -1,4 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <circle cx="32" cy="32" r="30" fill="#e2725b"/>
-  <text x="32" y="42" text-anchor="middle" font-family="Nunito, Arial Rounded MT Bold, Arial, sans-serif" font-size="28" font-weight="900" fill="#fff7f0">AL</text>
+  <circle cx="32" cy="32" r="31" fill="#e2725b"/>
+  <path d="M32 11c-8.3 0-15 6.5-15 14.6 0 5.2 2.8 8.6 5.2 11.2 1.6 1.7 2.8 3.4 2.8 5.7v1.5h14v-1.5c0-2.3 1.2-4 2.8-5.7 2.4-2.6 5.2-6 5.2-11.2C47 17.5 40.3 11 32 11z" fill="#ffd36b"/>
+  <path d="M27.5 36c0-4 2-6 4.5-9 2.5 3 4.5 5 4.5 9" fill="none" stroke="#e8794a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="25" y="45.5" width="14" height="4" rx="2" fill="#fff7f0"/>
+  <rect x="26.5" y="50.5" width="11" height="4" rx="2" fill="#fff7f0"/>
+  <path d="M22 19.5c1.5-2.6 4-4.4 7-5" fill="none" stroke="#fff7f0" stroke-width="2.4" stroke-linecap="round" opacity="0.8"/>
 </svg>
