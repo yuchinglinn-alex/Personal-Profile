@@ -60,6 +60,7 @@
          nested <ul> inside a detail adds a third level that opens when the detail is clicked.
          data-source on a detail lists the ids of the resume lines it comes from (empty means it
          isn't on the resume); opening the detail quotes those lines.
+         The map is drawn as a street map, with each branch as a road.
          Without JavaScript the list shows as a plain outline. -->
     <section id="map" class="map-section" aria-labelledby="map-title">
       <h2 id="map-title" class="visually-hidden">How my experience connects</h2>
@@ -242,6 +243,18 @@
           <button type="button" data-zoom="reset" aria-label="Show the whole map">⤢</button>
         </div>
         <button type="button" class="map-expand" aria-pressed="false" hidden>Expand all</button>
+        <p class="map-progress" aria-live="polite" hidden><span class="map-progress-text"></span><span class="map-progress-bar"><span></span></span></p>
+        <svg class="map-compass" viewBox="-50 -50 100 100" aria-hidden="true" hidden>
+          <circle class="compass-face" r="44"/>
+          <circle class="compass-ring" r="38"/>
+          <g class="compass-needle">
+            <path class="compass-north" d="M0 -34 L8 0 L-8 0 Z"/>
+            <path class="compass-south" d="M0 34 L8 0 L-8 0 Z"/>
+            <path class="compass-side" d="M-24 0 L0 -5 L24 0 L0 5 Z"/>
+            <circle class="compass-pin" r="3.5"/>
+          </g>
+          <text class="compass-n" y="-39">N</text>
+        </svg>
         <p class="map-hint" hidden>Tap a topic, then a detail to see it on my resume · drag to move · <span class="hint-touch">pinch to zoom</span><span class="hint-mouse">Ctrl + scroll to zoom</span></p>
       </div>
 

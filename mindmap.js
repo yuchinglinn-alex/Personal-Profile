@@ -1,6 +1,6 @@
-// Turns the nested outline in #map into a zoomable, draggable mind map.
-// Topics sit in a ring around the center; opening one flies the camera in and
-// branches out its details. Selecting a topic also shows its panel and
+// Turns the nested outline in #map into a zoomable, draggable mind map, drawn as a street map.
+// Topics are districts in a ring of avenues around a roundabout; opening one flies the camera
+// in and branches out its details along side streets. Selecting a topic also shows its panel and
 // highlights the roles tagged with it in Experience.
 // Without this script the outline stays as a plain readable list.
 (function () {
@@ -57,6 +57,28 @@
     };
   });
 
+  // ---- Map labels -------------------------------------------------------
+
+  // Fills a node with a map pin, its label and its note.
+  function fillNode(el, item) {
+    var pin = document.createElement('i');
+    pin.className = 'stop-dot';
+    pin.setAttribute('aria-hidden', 'true');
+    el.appendChild(pin);
+    var text = document.createElement('span');
+    text.className = 'node-text';
+    var label = document.createElement('strong');
+    label.textContent = item.label;
+    text.appendChild(label);
+    if (item.note) {
+      var note = document.createElement('span');
+      note.className = 'node-note';
+      note.textContent = item.note;
+      text.appendChild(note);
+    }
+    el.appendChild(text);
+  }
+
   // ---- Build the canvas -------------------------------------------------
 
   var viewport = document.createElement('div');
@@ -67,10 +89,12 @@
   svg.setAttribute('class', 'mindmap-lines');
   svg.setAttribute('aria-hidden', 'true');
   world.appendChild(svg);
+  drawTerrain();
   viewport.appendChild(world);
   map.insertBefore(viewport, source);
   source.hidden = true;
   controls.hidden = false;
+  map.querySelector('.map-compass').removeAttribute('hidden');
   hint.hidden = false;
   map.classList.add('is-ready');
 
@@ -89,13 +113,72 @@
     return 'M' + x1 + ' ' + y1 + ' Q' + cx + ' ' + cy + ' ' + x2 + ' ' + y2;
   }
 
-  function addPath(d, className, group) {
-    var path = document.createElementNS(SVG_NS, 'path');
-    path.setAttribute('d', d);
-    path.setAttribute('class', className + ' line-' + group);
-    svg.appendChild(path);
-    return path;
+  function svgEl(name, attrs, parent) {
+    var el = document.createElementNS(SVG_NS, name);
+    Object.keys(attrs).forEach(function (key) {
+      el.setAttribute(key, attrs[key]);
+    });
+    (parent || svg).appendChild(el);
+    return el;
   }
+
+  // The city under the roads: blocks of side streets, a river, a lake and a few parks.
+  // Drawn once, far wider than the map, so panning never runs off the edge.
+  function drawTerrain() {
+    var EXTENT = 4000;
+    var defs = svgEl('defs', {});
+    var pattern = svgEl('pattern', { id: 'map-blocks', width: 150, height: 150, patternUnits: 'userSpaceOnUse' }, defs);
+    svgEl('path', { d: 'M0 0H150 M0 0V150 M0 75H150', class: 'terrain-street' }, pattern);
+    var land = svgEl('g', { class: 'terrain' });
+    svgEl('rect', { x: -EXTENT, y: -EXTENT, width: EXTENT * 2, height: EXTENT * 2, fill: 'url(#map-blocks)' }, land);
+    [
+      [-430, -260, 150, 110], [300, 140, 190, 120], [-240, 330, 130, 150],
+      [520, -420, 220, 140], [-900, 520, 260, 180], [880, 300, 200, 260]
+    ].forEach(function (p) {
+      svgEl('rect', { x: p[0], y: p[1], width: p[2], height: p[3], rx: 26, class: 'terrain-park' }, land);
+    });
+    svgEl('path', {
+      d: 'M-760 -4000 C-700 -1400 -420 -900 -560 -380 S-820 420 -640 900 S-560 2200 -700 4000',
+      class: 'terrain-river'
+    }, land);
+    svgEl('ellipse', { cx: 760, cy: 760, rx: 230, ry: 140, class: 'terrain-water' }, land);
+  }
+
+  // Roads are three strokes on one curve: the curb, the asphalt and the center line.
+  // Each kind of stroke has its own layer, so where roads meet they merge like a real junction
+  // instead of their curbs crossing over each other.
+  var layers = ['road-edge', 'road-fill', 'road-mark'].map(function (part) {
+    return svgEl('g', { class: part });
+  });
+
+  function addPath(d, className, group) {
+    var parts = layers.map(function (layer) {
+      return svgEl('path', { d: d, class: 'road ' + className + ' line-' + group }, layer);
+    });
+    // Callers treat a road like one element, so class changes go to all three strokes.
+    return {
+      parts: parts,
+      classList: {
+        toggle: function (name, on) {
+          parts.forEach(function (part) { part.classList.toggle(name, on); });
+        },
+        remove: function (name) {
+          parts.forEach(function (part) { part.classList.remove(name); });
+        }
+      }
+    };
+  }
+
+  function setRoad(road, d) {
+    road.parts.forEach(function (part) {
+      part.setAttribute('d', d);
+    });
+  }
+
+  // A roundabout where every avenue meets, with Alex in the middle.
+  layers.forEach(function (layer) {
+    svgEl('circle', { cx: 0, cy: 0, r: 64, class: 'road roundabout' }, layer);
+  });
 
   var center = document.createElement('button');
   center.type = 'button';
@@ -124,7 +207,12 @@
     node.className = 'node node-topic node-' + topic.group;
     node.dataset.topic = topic.id;
     node.setAttribute('aria-expanded', 'false');
-    node.textContent = topic.label;
+    fillNode(node, topic);
+    // How many of this topic's details have been opened, e.g. 1/4.
+    topic.count = document.createElement('span');
+    topic.count.className = 'topic-count';
+    topic.count.textContent = '0/' + topic.details.length;
+    node.appendChild(topic.count);
     place(node, topic.x, topic.y);
     world.appendChild(node);
     topic.node = node;
@@ -146,9 +234,7 @@
       el.tabIndex = -1;
       el.className = 'node node-detail node-' + topic.group;
       el.style.transitionDelay = j * 40 + 'ms';
-      el.innerHTML = '<strong></strong>' + (detail.note ? '<span></span>' : '');
-      el.querySelector('strong').textContent = detail.label;
-      if (detail.note) el.querySelector('span').textContent = detail.note;
+      fillNode(el, detail);
       if (branches) {
         el.classList.add('has-branches');
         el.setAttribute('aria-expanded', 'false');
@@ -169,9 +255,7 @@
         var subEl = document.createElement('div');
         subEl.className = 'node node-sub node-' + topic.group;
         subEl.style.transitionDelay = k * 40 + 'ms';
-        subEl.innerHTML = '<strong></strong>' + (sub.note ? '<span></span>' : '');
-        subEl.querySelector('strong').textContent = sub.label;
-        if (sub.note) subEl.querySelector('span').textContent = sub.note;
+        fillNode(subEl, sub);
         world.appendChild(subEl);
         sub.node = subEl;
       });
@@ -259,7 +343,7 @@
         d.y = box.y;
         d.w = box.w;
         d.h = box.h;
-        d.path.setAttribute('d', curve(topic.x, topic.y, d.x, d.y));
+        setRoad(d.path, curve(topic.x, topic.y, d.x, d.y));
       });
 
       // Sub-branches fan out along the line from the topic through their detail,
@@ -286,7 +370,7 @@
           sub.y = box.y;
           sub.w = box.w;
           sub.h = box.h;
-          sub.path.setAttribute('d', curve(detail.x, detail.y, sub.x, sub.y));
+          setRoad(sub.path, curve(detail.x, detail.y, sub.x, sub.y));
           place(sub.node, detail.x, detail.y);
         });
       });
@@ -362,13 +446,13 @@
     topics.forEach(function (t) {
       var tx = all ? t.ax : t.x;
       var ty = all ? t.ay : t.y;
-      t.path.setAttribute('d', curve(0, 0, tx, ty));
+      setRoad(t.path, curve(0, 0, tx, ty));
       t.details.forEach(function (d) {
         var dx = all ? d.ax : d.x;
         var dy = all ? d.ay : d.y;
-        d.path.setAttribute('d', curve(tx, ty, dx, dy));
+        setRoad(d.path, curve(tx, ty, dx, dy));
         d.items.forEach(function (sub) {
-          sub.path.setAttribute('d', curve(dx, dy, all ? sub.ax : sub.x, all ? sub.ay : sub.y));
+          setRoad(sub.path, curve(dx, dy, all ? sub.ax : sub.x, all ? sub.ay : sub.y));
         });
       });
     });
@@ -559,6 +643,7 @@
   function openDetail(detail) {
     if (activeDetail) showBranches(activeDetail, false);
     activeDetail = activeDetail === detail ? null : detail;
+    if (activeDetail) markVisited(activeDetail);
     map.classList.toggle('has-detail', !!activeDetail);
     topics.forEach(function (topic) {
       topic.details.forEach(function (d) {
@@ -620,9 +705,50 @@
   function pickInAll(detail) {
     if (allPicked) allPicked.node.classList.remove('is-expanded');
     allPicked = allPicked === detail ? null : detail;
-    if (allPicked) allPicked.node.classList.add('is-expanded');
+    if (allPicked) {
+      allPicked.node.classList.add('is-expanded');
+      markVisited(allPicked);
+    }
     showSource(allPicked);
   }
+
+  // ---- Exploring --------------------------------------------------------
+
+  // Opened details get a check, each topic counts its own, and a counter in the corner
+  // tracks the whole map, so there's a reason to open every branch.
+  var progress = map.querySelector('.map-progress');
+  var progressText = progress.querySelector('.map-progress-text');
+  var progressBar = progress.querySelector('.map-progress-bar span');
+  var compass = map.querySelector('.map-compass');
+  var total = topics.reduce(function (n, t) { return n + t.details.length; }, 0);
+  var visited = 0;
+
+  function showProgress() {
+    var done = visited === total;
+    progressText.textContent = done ? 'Whole map explored!' : visited + ' / ' + total + ' explored';
+    progressBar.style.width = (visited / total) * 100 + '%';
+    progress.classList.toggle('is-done', done);
+  }
+
+  function markVisited(detail) {
+    if (detail.visited) return;
+    detail.visited = true;
+    detail.node.classList.add('is-visited');
+    var topic = detail.topic;
+    var seen = topic.details.filter(function (d) { return d.visited; }).length;
+    topic.count.textContent = seen + '/' + topic.details.length;
+    topic.node.classList.toggle('is-complete', seen === topic.details.length);
+    visited++;
+    showProgress();
+    progress.classList.remove('is-bump');
+    // Restart the bump animation even if it ran before.
+    void progress.offsetWidth;
+    progress.classList.add('is-bump');
+    if (visited === total) compass.classList.add('is-spinning');
+  }
+
+  progress.hidden = false;
+  showProgress();
 
   expandButton.hidden = false;
   expandButton.addEventListener('click', function () {
