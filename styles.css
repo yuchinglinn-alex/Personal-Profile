@@ -955,3 +955,90 @@ h3,
 .node {
   box-shadow: none;
 }
+
+/* Race-course progress bar under the header */
+.course {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0.15rem 1rem 0.55rem;
+}
+
+.course-track {
+  position: relative;
+  flex: 1;
+  height: 4px;
+  margin: 0 0.75rem;
+  border-radius: 999px;
+  background: var(--border);
+}
+
+.course-fill {
+  height: 100%;
+  width: 0;
+  border-radius: inherit;
+  background: var(--accent);
+}
+
+.course-checkpoint {
+  position: absolute;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--border);
+  border-radius: 50%;
+  background: var(--bg);
+  transform: translate(-50%, -50%);
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.course-checkpoint.is-passed {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.course-runner,
+.course-finish {
+  position: absolute;
+  top: 50%;
+  font-size: 1.3rem;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.course-runner {
+  z-index: 1;
+  /* The emoji faces left, so flip it to run toward the finish. */
+  transform: translate(-50%, -60%) scaleX(-1);
+}
+
+.course-finish {
+  left: 100%;
+  transform: translate(-20%, -70%);
+}
+
+.course-distance {
+  min-width: 7.5rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.course.is-finished .course-runner {
+  display: none;
+}
+
+.course.is-finished .course-distance {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+@media (max-width: 560px) {
+  .course-distance {
+    min-width: 6.5rem;
+    font-size: 0.78rem;
+  }
+}

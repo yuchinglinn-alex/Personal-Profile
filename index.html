@@ -27,6 +27,8 @@
         <li><a href="#contact">Contact</a></li>
       </ul>
     </nav>
+    <!-- Race-course progress bar: filled by course.js as the page scrolls; each checkpoint is a section. -->
+    <div class="course" data-course aria-hidden="true"></div>
   </header>
 
   <main id="main">
@@ -434,6 +436,7 @@
 
   <script src="mindmap.js" defer></script>
   <script src="reveal.js" defer></script>
+  <script src="course.js" defer></script>
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 </body>
 </html>
