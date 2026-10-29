@@ -60,42 +60,40 @@
          nested <ul> inside a detail adds a third level that opens when the detail is clicked.
          data-source on a detail lists the ids of the resume lines it comes from (empty means it
          isn't on the resume); opening the detail quotes those lines.
-         The map is drawn as a street map: topics and details are places on it. data-place names
-         the real-world place that stands for the item, and data-icon picks its map icon
-         (the icons are in mindmap.js).
+         The map is drawn as a street map, with each branch as a road.
          Without JavaScript the list shows as a plain outline. -->
     <section id="map" class="map-section" aria-labelledby="map-title">
       <h2 id="map-title" class="visually-hidden">How my experience connects</h2>
       <div class="mindmap" data-mindmap>
         <ul class="mindmap-outline container" data-mindmap-source>
-          <li data-place="University" data-icon="university" data-topic="mba" data-group="foundation">MBA
+          <li data-topic="mba" data-group="foundation">MBA
             <ul>
-              <li data-place="Campus in Taipei" data-icon="campus" data-source="edu-mba">National Chengchi University<small>International Marketing · 2019–21</small>
+              <li data-source="edu-mba">National Chengchi University<small>International Marketing · 2019–21</small>
                 <ul>
                   <li>International Marketing focus</li>
                   <li>Taipei, Taiwan</li>
                 </ul>
               </li>
-              <li data-place="Library" data-icon="library" data-source="edu-mba-thesis">Thesis<small>Governance &amp; SDG performance</small>
+              <li data-source="edu-mba-thesis">Thesis<small>Governance &amp; SDG performance</small>
                 <ul>
                   <li>Corporate governance</li>
                   <li>SDG performance</li>
                   <li>Types of shareholders</li>
                 </ul>
               </li>
-              <li data-place="Foundation hall" data-icon="medal" data-source="edu-mba-scholarship">Scholarship<small>Sustainable Development &amp; Social Care</small></li>
+              <li data-source="edu-mba-scholarship">Scholarship<small>Sustainable Development &amp; Social Care</small></li>
             </ul>
           </li>
-          <li data-place="Tech park" data-icon="chip" data-topic="tech" data-group="foundation">Tech background
+          <li data-topic="tech" data-group="foundation">Tech background
             <ul>
-              <li data-place="Research lab" data-icon="lab" data-source="edu-ms">UIUC MS, Tech Management<small>Business Data Analytics · 2021–22</small>
+              <li data-source="edu-ms">UIUC MS, Tech Management<small>Business Data Analytics · 2021–22</small>
                 <ul>
                   <li>Gies College of Business</li>
                   <li>Business Data Analytics focus</li>
                 </ul>
               </li>
-              <li data-place="Exam center" data-icon="certificate" data-source="skill-cert">Power BI certified<small>Microsoft Data Analyst Associate</small></li>
-              <li data-place="Robot factory" data-icon="factory" data-source="r-oec-auto">AI automation<small>Power Automate · OCR · LLMs</small>
+              <li data-source="skill-cert">Power BI certified<small>Microsoft Data Analyst Associate</small></li>
+              <li data-source="r-oec-auto">AI automation<small>Power Automate · OCR · LLMs</small>
                 <ul>
                   <li>AI document model training</li>
                   <li>OCR extraction</li>
@@ -103,7 +101,7 @@
                   <li>Used across 10+ offices</li>
                 </ul>
               </li>
-              <li data-place="Tool shop" data-icon="tools" data-source="skills-analytics skills-platforms">Python · SQL · AWS<small>Everyday toolkit</small>
+              <li data-source="skills-analytics skills-platforms">Python · SQL · AWS<small>Everyday toolkit</small>
                 <ul>
                   <li>Python modeling</li>
                   <li>SQL</li>
@@ -113,9 +111,9 @@
               </li>
             </ul>
           </li>
-          <li data-place="Bank" data-icon="bank" data-topic="credit" data-group="specialty">Credit Risk Management
+          <li data-topic="credit" data-group="specialty">Credit Risk Management
             <ul>
-              <li data-place="Bank vault" data-icon="vault" data-source="r-oec-5cs">5Cs credit risk model<small>−15% default rate</small>
+              <li data-source="r-oec-5cs">5Cs credit risk model<small>−15% default rate</small>
                 <ul>
                   <li>D&amp;B score</li>
                   <li>Payment history</li>
@@ -123,19 +121,19 @@
                   <li>Collateral</li>
                 </ul>
               </li>
-              <li data-place="Weather station" data-icon="weather" data-source="r-oec-default">Default prediction<small>73% accuracy on late payments</small>
+              <li data-source="r-oec-default">Default prediction<small>73% accuracy on late payments</small>
                 <ul>
                   <li>Transaction patterns</li>
                   <li>Macroeconomic factors</li>
                   <li>Built in Python</li>
                 </ul>
               </li>
-              <li data-place="Toll booth" data-icon="toll" data-source="r-oec-default">Targeted collections<small>−8% delinquencies</small>
+              <li data-source="r-oec-default">Targeted collections<small>−8% delinquencies</small>
                 <ul>
                   <li>Guided by late-payment predictions</li>
                 </ul>
               </li>
-              <li data-place="Stadium" data-icon="stadium" data-source="r-oec-5cs">Risk tiering<small>1,000+ customers</small>
+              <li data-source="r-oec-5cs">Risk tiering<small>1,000+ customers</small>
                 <ul>
                   <li>Scored with the 5Cs model</li>
                   <li>Automated tier assignment</li>
@@ -145,9 +143,9 @@
               </li>
             </ul>
           </li>
-          <li data-place="Data center" data-icon="server" data-topic="data" data-group="specialty">Data Analytics
+          <li data-topic="data" data-group="specialty">Data Analytics
             <ul>
-              <li data-place="Control tower" data-icon="tower" data-source="r-oec-bi">Power BI dashboards<small>50+ analyst hours saved monthly</small>
+              <li data-source="r-oec-bi">Power BI dashboards<small>50+ analyst hours saved monthly</small>
                 <ul>
                   <li>Shipment volume</li>
                   <li>Portfolio risk</li>
@@ -155,27 +153,27 @@
                   <li>Key risk indicators</li>
                 </ul>
               </li>
-              <li data-place="Call center" data-icon="phone" data-source="r-tx-crm">CRM analytics<small>8,000+ prospects</small>
+              <li data-source="r-tx-crm">CRM analytics<small>8,000+ prospects</small>
                 <ul>
                   <li>Weekly CRM reviews</li>
                   <li>Targeted campaigns</li>
                   <li>15% open · 10% click-to-open</li>
                 </ul>
               </li>
-              <li data-place="Observatory" data-icon="telescope" data-source="r-jj-social">Nielsen &amp; Mintel<small>100+ products tracked</small>
+              <li data-source="r-jj-social">Nielsen &amp; Mintel<small>100+ products tracked</small>
                 <ul>
                   <li>Consumer behavior reports</li>
                   <li>Social listening meetings</li>
                 </ul>
               </li>
-              <li data-place="Stock exchange" data-icon="exchange" data-source="r-jj-pl">P&amp;L analysis<small>Monthly, for sales strategy</small>
+              <li data-source="r-jj-pl">P&amp;L analysis<small>Monthly, for sales strategy</small>
                 <ul>
                   <li>Nielsen sales data</li>
                   <li>Campaign strategy</li>
                   <li>Listerine +10% sales</li>
                 </ul>
               </li>
-              <li data-place="Shipping port" data-icon="ship" data-source="">Payment forecast<small>Freightos index → freight payments</small>
+              <li data-source="">Payment forecast<small>Freightos index → freight payments</small>
                 <ul>
                   <li>Web-scraped Freightos index prices</li>
                   <li>Freight rate trends</li>
@@ -184,30 +182,30 @@
               </li>
             </ul>
           </li>
-          <li data-place="Broadcast tower" data-icon="broadcast" data-topic="digital" data-group="specialty">Digital Marketing
+          <li data-topic="digital" data-group="specialty">Digital Marketing
             <ul>
-              <li data-place="Post office" data-icon="mail" data-source="r-tx-crm r-jj-sfmc">Salesforce Marketing Cloud<small>+15% customer retention</small>
+              <li data-source="r-tx-crm r-jj-sfmc">Salesforce Marketing Cloud<small>+15% customer retention</small>
                 <ul>
                   <li>Targeted campaigns</li>
                   <li>15% open rate</li>
                   <li>10% click-to-open rate</li>
                 </ul>
               </li>
-              <li data-place="Town square" data-icon="square" data-source="r-tx-social">Social strategy<small>+10% followers, 6% engagement</small>
+              <li data-source="r-tx-social">Social strategy<small>+10% followers, 6% engagement</small>
                 <ul>
                   <li>Competitive analysis</li>
                   <li>Facebook &amp; LinkedIn posts</li>
                   <li>Market trend insights</li>
                 </ul>
               </li>
-              <li data-place="Test track" data-icon="flag" data-source="r-jj-uat">Website UAT<small>5+ product sites</small>
+              <li data-source="r-jj-uat">Website UAT<small>5+ product sites</small>
                 <ul>
                   <li>Test plans</li>
                   <li>Scenarios &amp; test cases</li>
                   <li>Run in JIRA</li>
                 </ul>
               </li>
-              <li data-place="Cinema" data-icon="film" data-source="r-tx-saas">SaaS launch content<small>+7% customer satisfaction</small>
+              <li data-source="r-tx-saas">SaaS launch content<small>+7% customer satisfaction</small>
                 <ul>
                   <li>Demo videos</li>
                   <li>Customer resources</li>
@@ -216,21 +214,21 @@
               </li>
             </ul>
           </li>
-          <li data-place="Market street" data-icon="shop" data-topic="brand" data-group="experience">Brand Marketing
+          <li data-topic="brand" data-group="experience">Brand Marketing
             <ul>
-              <li data-place="Pharmacy" data-icon="pharmacy" data-source="r-jj-social">Aveeno<small>+25% social engagement YoY</small>
+              <li data-source="r-jj-social">Aveeno<small>+25% social engagement YoY</small>
                 <ul>
                   <li>Social listening</li>
                   <li>Consumer insights</li>
                 </ul>
               </li>
-              <li data-place="Convenience store" data-icon="store" data-source="r-jj-pl">Listerine<small>+10% convenience-store sales</small>
+              <li data-source="r-jj-pl">Listerine<small>+10% convenience-store sales</small>
                 <ul>
                   <li>Monthly P&amp;L with Nielsen</li>
                   <li>Convenience-store channel</li>
                 </ul>
               </li>
-              <li data-place="Radio station" data-icon="radio" data-source="r-jj-social">Social listening<small>100+ products</small>
+              <li data-source="r-jj-social">Social listening<small>100+ products</small>
                 <ul>
                   <li>Nielsen &amp; Mintel data</li>
                   <li>Internal &amp; external products</li>
@@ -245,7 +243,7 @@
           <button type="button" data-zoom="reset" aria-label="Show the whole map">⤢</button>
         </div>
         <button type="button" class="map-expand" aria-pressed="false" hidden>Expand all</button>
-        <p class="map-hint" hidden>Tap a district, then a place to see it on my resume · drag to move · <span class="hint-touch">pinch to zoom</span><span class="hint-mouse">Ctrl + scroll to zoom</span></p>
+        <p class="map-hint" hidden>Tap a topic, then a detail to see it on my resume · drag to move · <span class="hint-touch">pinch to zoom</span><span class="hint-mouse">Ctrl + scroll to zoom</span></p>
       </div>
 
       <div class="container">

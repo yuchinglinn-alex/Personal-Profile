@@ -321,7 +321,7 @@ a {
 }
 
 /* Roads: a curb, asphalt and a dashed center line, wider for bigger roads.
-   Avenues run from the roundabout to each topic, streets to its places, lanes to the stops. */
+   Avenues run from the roundabout to each topic, streets to its details, lanes beyond. */
 .road-edge .road {
   stroke: var(--road-edge);
 }
@@ -418,13 +418,12 @@ button.node:focus-visible {
   box-shadow: none;
 }
 
-.node-detail.is-dimmed .node-note,
-.node-detail.is-dimmed .node-place {
+.node-detail.is-dimmed .node-note {
   color: color-mix(in srgb, var(--node-color) 45%, var(--surface));
 }
 
 .node-detail.is-dimmed .branch-mark,
-.node-detail.is-dimmed .place-icon {
+.node-detail.is-dimmed .stop-dot {
   background: color-mix(in srgb, var(--node-color) 40%, var(--surface));
 }
 
@@ -459,7 +458,7 @@ button.node:focus-visible {
   box-shadow: 0 0 0 2px var(--accent), 0 4px 14px rgb(0 0 0 / 0.15);
 }
 
-/* Map labels: a round marker with the place's icon, then the label, note and place name. */
+/* Map labels: a pin, then the label and note. */
 .node-topic,
 .node-detail,
 .node-sub {
@@ -477,54 +476,22 @@ button.node:focus-visible {
   min-width: 0;
 }
 
-.place-icon {
-  flex: none;
-  display: grid;
-  place-items: center;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
-  background: var(--node-color);
-  color: var(--surface);
-}
-
-.place-icon svg {
-  width: 1.2rem;
-  height: 1.2rem;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
 .node-topic {
-  padding: 0.45rem 1rem 0.45rem 0.45rem;
+  padding: 0.55rem 1rem 0.55rem 0.8rem;
 }
 
-.node-topic .place-icon {
-  width: 2.3rem;
-  height: 2.3rem;
+.node-topic .stop-dot {
+  width: 0.95rem;
+  height: 0.95rem;
 }
 
-.node-topic.is-active .place-icon {
+.node-topic.is-active .stop-dot {
+  border-color: var(--node-color);
   background: var(--surface);
-  color: var(--node-color);
+  box-shadow: 0 0 0 1.5px var(--surface);
 }
 
-.node-place {
-  font-size: 0.85rem;
-  font-weight: 500;
-  font-style: italic;
-  color: var(--muted);
-}
-
-.node-topic.is-active .node-place {
-  color: inherit;
-  opacity: 0.85;
-}
-
-/* Stops on the lanes: a small dot in the topic's color, like a bus stop. */
+/* Map pins: a small dot in the topic's color, like a stop on a transit map. */
 .stop-dot {
   flex: none;
   width: 0.7rem;
@@ -538,7 +505,7 @@ button.node:focus-visible {
 .node-detail {
   z-index: 0;
   max-width: none;
-  padding: 0.45rem 0.9rem 0.45rem 0.45rem;
+  padding: 0.55rem 0.9rem 0.55rem 0.75rem;
   border-width: 1.5px;
   border-radius: 14px;
   font-size: 1.05rem;
@@ -787,16 +754,6 @@ button.node-detail {
   .node-sub {
     max-width: 12rem;
     white-space: normal;
-  }
-
-  .place-icon {
-    width: 1.7rem;
-    height: 1.7rem;
-  }
-
-  .place-icon svg {
-    width: 1rem;
-    height: 1rem;
   }
 
   .map-hint {
