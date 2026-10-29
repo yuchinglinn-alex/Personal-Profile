@@ -60,8 +60,6 @@
 }
 
 html {
-  /* Every size on the site is in rem, so this one value scales all the text together. */
-  font-size: 90%;
   scroll-behavior: smooth;
   scroll-padding-top: 4.5rem;
 }
