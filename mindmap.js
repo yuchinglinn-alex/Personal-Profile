@@ -208,6 +208,11 @@
     node.dataset.topic = topic.id;
     node.setAttribute('aria-expanded', 'false');
     fillNode(node, topic);
+    // How many of this topic's details have been opened, e.g. 1/4.
+    topic.count = document.createElement('span');
+    topic.count.className = 'topic-count';
+    topic.count.textContent = '0/' + topic.details.length;
+    node.appendChild(topic.count);
     place(node, topic.x, topic.y);
     world.appendChild(node);
     topic.node = node;
@@ -638,6 +643,7 @@
   function openDetail(detail) {
     if (activeDetail) showBranches(activeDetail, false);
     activeDetail = activeDetail === detail ? null : detail;
+    if (activeDetail) markVisited(activeDetail);
     map.classList.toggle('has-detail', !!activeDetail);
     topics.forEach(function (topic) {
       topic.details.forEach(function (d) {
@@ -699,9 +705,50 @@
   function pickInAll(detail) {
     if (allPicked) allPicked.node.classList.remove('is-expanded');
     allPicked = allPicked === detail ? null : detail;
-    if (allPicked) allPicked.node.classList.add('is-expanded');
+    if (allPicked) {
+      allPicked.node.classList.add('is-expanded');
+      markVisited(allPicked);
+    }
     showSource(allPicked);
   }
+
+  // ---- Exploring --------------------------------------------------------
+
+  // Opened details get a check, each topic counts its own, and a counter in the corner
+  // tracks the whole map, so there's a reason to open every branch.
+  var progress = map.querySelector('.map-progress');
+  var progressText = progress.querySelector('.map-progress-text');
+  var progressBar = progress.querySelector('.map-progress-bar span');
+  var compass = map.querySelector('.map-compass');
+  var total = topics.reduce(function (n, t) { return n + t.details.length; }, 0);
+  var visited = 0;
+
+  function showProgress() {
+    var done = visited === total;
+    progressText.textContent = done ? 'Whole map explored!' : visited + ' / ' + total + ' explored';
+    progressBar.style.width = (visited / total) * 100 + '%';
+    progress.classList.toggle('is-done', done);
+  }
+
+  function markVisited(detail) {
+    if (detail.visited) return;
+    detail.visited = true;
+    detail.node.classList.add('is-visited');
+    var topic = detail.topic;
+    var seen = topic.details.filter(function (d) { return d.visited; }).length;
+    topic.count.textContent = seen + '/' + topic.details.length;
+    topic.node.classList.toggle('is-complete', seen === topic.details.length);
+    visited++;
+    showProgress();
+    progress.classList.remove('is-bump');
+    // Restart the bump animation even if it ran before.
+    void progress.offsetWidth;
+    progress.classList.add('is-bump');
+    if (visited === total) compass.classList.add('is-spinning');
+  }
+
+  progress.hidden = false;
+  showProgress();
 
   expandButton.hidden = false;
   expandButton.addEventListener('click', function () {
