@@ -1,34 +1,46 @@
-/* Colors and spacing live here so the whole site can be re-themed in one place. */
+/* Colors and spacing live here so the whole site can be re-themed in one place.
+   Theme: warm creative (peach, mint and periwinkle; rounded shapes). */
 :root {
-  --bg: #fbfaf8;
+  --bg: #fff7f0;
   --surface: #ffffff;
-  --text: #1f2328;
-  --muted: #5b636e;
-  --border: #e4e2dd;
-  --accent: #2f6f6a;
+  --text: #3b2f2f;
+  --muted: #7d6b66;
+  --border: #f1dccf;
+  --accent: #c95a43;
   --accent-contrast: #ffffff;
-  --foundation: #4a5fa8;
-  --specialty: #2f6f6a;
-  --experience: #b0603a;
-  --highlight-bg: #eef5f4;
-  --radius: 10px;
+  --foundation: #7c83db;
+  --specialty: #3fa197;
+  --experience: #e8794a;
+  --highlight-bg: #fdeee4;
+  --glow-1: #ffd9c7;
+  --glow-2: #d9f0ec;
+  --map-bg: #fffaf5;
+  --map-dot: #f3d9c9;
+  --card-shadow: rgb(226 114 91 / 0.12);
+  --radius: 20px;
   --max-width: 840px;
-  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font: "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-script: "Caveat", "Segoe Print", "Bradley Hand", cursive;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #141618;
-    --surface: #1c1f22;
-    --text: #e8e6e3;
-    --muted: #a0a7b0;
-    --border: #2d3237;
-    --accent: #6cc0b8;
-    --accent-contrast: #0f1a19;
-    --foundation: #93a6ec;
-    --specialty: #6cc0b8;
-    --experience: #e59a73;
-    --highlight-bg: #1d2a29;
+    --bg: #1f1816;
+    --surface: #2a211e;
+    --text: #f5e9e2;
+    --muted: #bba79e;
+    --border: #3d302b;
+    --accent: #f29a83;
+    --accent-contrast: #2a1712;
+    --foundation: #a3a9f0;
+    --specialty: #74cdc3;
+    --experience: #f5a27c;
+    --highlight-bg: #33251f;
+    --glow-1: #4a2a20;
+    --glow-2: #1e3532;
+    --map-bg: #241c19;
+    --map-dot: #3d302b;
+    --card-shadow: rgb(0 0 0 / 0.3);
   }
 }
 
@@ -615,7 +627,7 @@ button.node-detail {
   }
 
   .node-topic {
-    max-width: 8rem;
+    max-width: 9rem;
     white-space: normal;
   }
 
@@ -916,4 +928,44 @@ h3 {
 
 .skill-group:first-of-type {
   margin-top: 0;
+}
+
+/* Warm creative theme details */
+body {
+  background:
+    radial-gradient(circle at 80% 8%, var(--glow-1) 0, transparent 28%),
+    radial-gradient(circle at 60% 18%, var(--glow-2) 0, transparent 20%) no-repeat,
+    var(--bg);
+}
+
+.eyebrow {
+  font-family: var(--font-script);
+  font-size: 2rem;
+  line-height: 1.2;
+  color: var(--accent);
+}
+
+.hero h1,
+.section h2 {
+  font-weight: 900;
+}
+
+.section h2::after {
+  content: " \2726";
+  color: var(--accent);
+}
+
+.mindmap.is-ready {
+  background-color: var(--map-bg);
+  background-image: radial-gradient(var(--map-dot) 1.5px, transparent 1.5px);
+}
+
+.node {
+  border-width: 3px;
+}
+
+.card,
+.role.is-highlighted {
+  border-radius: var(--radius);
+  box-shadow: 0 6px 20px var(--card-shadow);
 }
