@@ -509,7 +509,8 @@ button.node-detail {
 
 .map-expand {
   position: absolute;
-  left: 0.75rem;
+  /* Sits just left of the zoom buttons (2.5rem wide, 0.75rem from the edge). */
+  right: 4rem;
   top: 0.75rem;
   z-index: 2;
   padding: 0.5rem 0.95rem;
