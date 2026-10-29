@@ -982,21 +982,30 @@ h3,
   background: var(--accent);
 }
 
+/* Each checkpoint is a small flag: a pole planted on the track with a pennant on top. */
 .course-checkpoint {
   position: absolute;
-  top: 50%;
-  width: 10px;
-  height: 10px;
-  border: 2px solid var(--border);
-  border-radius: 50%;
-  background: var(--bg);
-  transform: translate(-50%, -50%);
-  transition: background 0.2s, border-color 0.2s;
+  bottom: 50%;
+  width: 2px;
+  height: 14px;
+  border-radius: 1px;
+  background: var(--muted);
+  transform: translateX(-1px);
 }
 
-.course-checkpoint.is-passed {
-  border-color: var(--accent);
-  background: var(--accent);
+.course-checkpoint::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 2px;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-left: 8px solid color-mix(in srgb, var(--muted) 45%, var(--bg));
+  transition: border-left-color 0.2s;
+}
+
+.course-checkpoint.is-passed::after {
+  border-left-color: var(--accent);
 }
 
 .course-runner,
