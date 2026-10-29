@@ -16,10 +16,28 @@
   --max-width: 840px;
   --font: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  color-scheme: light;
+}
+
+/* The theme switch in the header sets data-theme on <html>: light (the default), dark, or
+   system, which follows the device setting. The dark colors are listed twice for that reason. */
+:root[data-theme="dark"] {
+  --bg: #1b1815;
+  --surface: #24201c;
+  --text: #efe7da;
+  --muted: #b3a797;
+  --border: #3a332c;
+  --accent: #e09a85;
+  --accent-contrast: #24120d;
+  --foundation: #9db4d8;
+  --specialty: #9cc29f;
+  --experience: #e09a85;
+  --highlight-bg: #2e2720;
+  color-scheme: dark;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root[data-theme="system"] {
     --bg: #1b1815;
     --surface: #24201c;
     --text: #efe7da;
@@ -31,6 +49,7 @@
     --specialty: #9cc29f;
     --experience: #e09a85;
     --highlight-bg: #2e2720;
+    color-scheme: dark;
   }
 }
 
@@ -1047,8 +1066,53 @@ h3,
 }
 
 @media (max-width: 560px) {
+  .course {
+    padding-top: 0.6rem;
+  }
+
   .course-distance {
     min-width: 6.5rem;
     font-size: 0.78rem;
   }
+}
+
+/* Light / System / Dark switch in the header */
+.nav-end {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+}
+
+.theme-switch {
+  display: inline-flex;
+  padding: 2px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+}
+
+.theme-switch button {
+  padding: 0.15rem 0.6rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.theme-switch button:hover {
+  color: var(--text);
+}
+
+.theme-switch button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.theme-switch button[aria-pressed="true"] {
+  background: var(--text);
+  color: var(--bg);
 }

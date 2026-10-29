@@ -1,10 +1,17 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Alex Lin | Credit &amp; Data Analytics</title>
   <meta name="description" content="Yuching (Alex) Lin: Senior Credit Data Analyst in New York with an MBA and a tech background, working across credit, data analytics and digital marketing.">
+  <script>
+    // Apply the saved Light / System / Dark choice before the page paints, so it never flashes.
+    try {
+      var savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark' || savedTheme === 'system') document.documentElement.dataset.theme = savedTheme;
+    } catch (e) {}
+  </script>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,15 +24,22 @@
   <header class="site-header">
     <nav class="nav container" aria-label="Primary">
       <a class="nav-brand" href="#top">Alex Lin</a>
-      <ul class="nav-links">
-        <li><a href="#map">Map</a></li>
-        <li><a href="#about">About</a></li>
-        <li><a href="#experience">Experience</a></li>
-        <li><a href="#projects">Projects</a></li>
-        <li><a href="#education">Education</a></li>
-        <li><a href="#skills">Skills</a></li>
-        <li><a href="#contact">Contact</a></li>
-      </ul>
+      <div class="nav-end">
+        <ul class="nav-links">
+          <li><a href="#map">Map</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#experience">Experience</a></li>
+          <li><a href="#projects">Projects</a></li>
+          <li><a href="#education">Education</a></li>
+          <li><a href="#skills">Skills</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+        <div class="theme-switch" role="group" aria-label="Color theme" data-theme-switch>
+          <button type="button" data-theme-option="light">Light</button>
+          <button type="button" data-theme-option="system">System</button>
+          <button type="button" data-theme-option="dark">Dark</button>
+        </div>
+      </div>
     </nav>
     <!-- Race-course progress bar: filled by course.js as the page scrolls; each checkpoint is a section. -->
     <div class="course" data-course aria-hidden="true"></div>
@@ -437,6 +451,7 @@
   <script src="mindmap.js" defer></script>
   <script src="reveal.js" defer></script>
   <script src="course.js" defer></script>
+  <script src="theme.js" defer></script>
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 </body>
 </html>
