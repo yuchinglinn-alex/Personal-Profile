@@ -1,10 +1,17 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Alex Lin | Credit &amp; Data Analytics</title>
   <meta name="description" content="Yuching (Alex) Lin: Senior Credit Data Analyst in New York with an MBA and a tech background, working across credit, data analytics and digital marketing.">
+  <script>
+    // Apply the saved Light / System / Dark choice before the page paints, so it never flashes.
+    try {
+      var savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark' || savedTheme === 'system') document.documentElement.dataset.theme = savedTheme;
+    } catch (e) {}
+  </script>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,15 +24,22 @@
   <header class="site-header">
     <nav class="nav container" aria-label="Primary">
       <a class="nav-brand" href="#top">Alex Lin</a>
-      <ul class="nav-links">
-        <li><a href="#map">Map</a></li>
-        <li><a href="#about">About</a></li>
-        <li><a href="#experience">Experience</a></li>
-        <li><a href="#projects">Projects</a></li>
-        <li><a href="#education">Education</a></li>
-        <li><a href="#skills">Skills</a></li>
-        <li><a href="#contact">Contact</a></li>
-      </ul>
+      <div class="nav-end">
+        <ul class="nav-links">
+          <li><a href="#map">Map</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#experience">Experience</a></li>
+          <li><a href="#projects">Projects</a></li>
+          <li><a href="#education">Education</a></li>
+          <li><a href="#skills">Skills</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+        <div class="theme-switch" role="group" aria-label="Color theme" data-theme-switch>
+          <button type="button" data-theme-option="light" aria-label="Light" title="Light"><span class="theme-icon" aria-hidden="true">☀</span><span class="theme-label">Light</span></button>
+          <button type="button" data-theme-option="system" aria-label="System" title="System"><span class="theme-icon" aria-hidden="true">◐</span><span class="theme-label">System</span></button>
+          <button type="button" data-theme-option="dark" aria-label="Dark" title="Dark"><span class="theme-icon" aria-hidden="true">☾</span><span class="theme-label">Dark</span></button>
+        </div>
+      </div>
     </nav>
     <!-- Race-course progress bar: filled by course.js as the page scrolls; each checkpoint is a section. -->
     <div class="course" data-course aria-hidden="true"></div>
@@ -370,22 +384,46 @@
     <!-- Education -->
     <section id="education" class="section container">
       <h2>Education</h2>
-      <ul class="edu">
-        <li>
-          <h3>MS, Technology Management <span class="role-org">· Business Data Analytics</span></h3>
-          <p id="edu-ms">University of Illinois Urbana-Champaign, Gies College of Business · 2021–2022</p>
+      <ol class="timeline edu">
+        <li class="role">
+          <div class="role-meta">
+            <span class="role-dates">2021 – 2022</span>
+          </div>
+          <div class="role-body">
+            <h3>Master of Science in Technology Management</h3>
+            <p class="edu-school" id="edu-ms">University of Illinois Urbana-Champaign, Gies College of Business</p>
+            <ul>
+              <li>Concentration in Business Data Analytics</li>
+            </ul>
+          </div>
         </li>
-        <li>
-          <h3>MBA <span class="role-org">· International Marketing</span></h3>
-          <p id="edu-mba">National Chengchi University, Taipei · 2019–2021</p>
-          <p id="edu-mba-scholarship">Scholarship for Sustainable Development and Social Care</p>
-          <p id="edu-mba-thesis">Thesis: Correlations of Corporate Governance, Performance of Sustainable Development Goals, and Types of Shareholders</p>
+        <li class="role">
+          <div class="role-meta">
+            <span class="role-dates">2019 – 2021</span>
+          </div>
+          <div class="role-body">
+            <h3>Master of Business Administration (MBA)</h3>
+            <p class="edu-school" id="edu-mba">National Chengchi University, Taipei</p>
+            <ul>
+              <li>Concentration in International Marketing</li>
+              <li id="edu-mba-scholarship">Scholarship for Sustainable Development and Social Care</li>
+              <li id="edu-mba-thesis">Thesis on how corporate governance and types of shareholders relate to a company's performance on the UN Sustainable Development Goals (SDGs)</li>
+            </ul>
+          </div>
         </li>
-        <li>
-          <h3>Bachelor, International Program of Agribusiness</h3>
-          <p>National Chung Hsing University, Taichung · 2015–2019, including an international business exchange at the University of South Carolina, Darla Moore School of Business (2017)</p>
+        <li class="role">
+          <div class="role-meta">
+            <span class="role-dates">2015 – 2019</span>
+          </div>
+          <div class="role-body">
+            <h3>Bachelor's in Agribusiness, International Program</h3>
+            <p class="edu-school">National Chung Hsing University, Taichung</p>
+            <ul>
+              <li>International business exchange at the University of South Carolina, Darla Moore School of Business (2017)</li>
+            </ul>
+          </div>
         </li>
-      </ul>
+      </ol>
     </section>
 
     <!-- Skills -->
@@ -437,6 +475,7 @@
   <script src="mindmap.js" defer></script>
   <script src="reveal.js" defer></script>
   <script src="course.js" defer></script>
+  <script src="theme.js" defer></script>
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 </body>
 </html>
