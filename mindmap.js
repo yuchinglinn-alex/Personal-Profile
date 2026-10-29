@@ -1,6 +1,6 @@
-// Turns the nested outline in #map into a zoomable, draggable mind map.
-// Topics sit in a ring around the center; opening one flies the camera in and
-// branches out its details. Selecting a topic also shows its panel and
+// Turns the nested outline in #map into a zoomable, draggable mind map, drawn as a street map.
+// Topics are districts in a ring of avenues around a roundabout; opening one flies the camera
+// in and branches out its details along side streets, each detail a place on the map. Selecting a topic also shows its panel and
 // highlights the roles tagged with it in Experience.
 // Without this script the outline stays as a plain readable list.
 (function () {
@@ -41,6 +41,8 @@
       return {
         label: item.firstChild.textContent.trim(),
         note: small ? small.textContent.trim() : '',
+        place: item.dataset.place || '',
+        icon: item.dataset.icon || '',
         // Ids of the resume lines this item comes from; [] means not on the resume, null means untagged.
         source: item.hasAttribute('data-source') ? item.dataset.source.split(/\s+/).filter(Boolean) : null,
         items: readItems(item.querySelector(':scope > ul'))
@@ -53,9 +55,80 @@
       id: li.dataset.topic,
       group: li.dataset.group,
       label: li.firstChild.textContent.trim(),
+      place: li.dataset.place || '',
+      icon: li.dataset.icon || '',
       details: readItems(li.querySelector(':scope > ul'))
     };
   });
+
+  // ---- Map icons ----------------------------------------------------------
+
+  // Line icons on a 24px grid, one per kind of place (data-icon in the outline).
+  var ICONS = {
+    university: 'M2 9l10-5 10 5-10 5z M6 11v5c0 1.5 3 3 6 3s6-1.5 6-3v-5 M22 9v6',
+    campus: 'M4 21V10l8-5 8 5v11 M9 21v-6h6v6 M2 21h20',
+    library: 'M4 5c3-1 6-1 8 1 2-2 5-2 8-1v14c-3-1-6-1-8 1-2-2-5-2-8-1z M12 6v14',
+    medal: 'M8 3l4 6 4-6 M12 9a6 6 0 1 1 0 12a6 6 0 1 1 0-12 M12 13v4',
+    chip: 'M7 7h10v10H7z M10 3v4 M14 3v4 M10 17v4 M14 17v4 M3 10h4 M3 14h4 M17 10h4 M17 14h4',
+    lab: 'M9 3h6 M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3 M7 15h10',
+    certificate: 'M4 4h16v12H4z M8 8h8 M8 12h5 M15 15l-1 6 3-2 3 2-1-6',
+    factory: 'M3 21V11l5 3v-3l5 3v-3l5 3V4h3v17z M3 21h18',
+    tools: 'M15 4a5 5 0 0 0-4 7l-7 7 2 2 7-7a5 5 0 0 0 7-4l-3 1-2-2z',
+    bank: 'M3 9l9-5 9 5z M5 11v7 M9.5 11v7 M14.5 11v7 M19 11v7 M3 21h18',
+    vault: 'M4 4h16v15H4z M12 8.5a3 3 0 1 1 0 6a3 3 0 1 1 0-6 M12 6.5v2 M12 14.5v2 M7 19v2 M17 19v2',
+    weather: 'M7 15h10a4 4 0 0 0 0-8 5 5 0 0 0-9.6 1.4A3.3 3.3 0 0 0 7 15z M8 18l-1 3 M12 18l-1 3 M16 18l-1 3',
+    toll: 'M4 21V6h4v15 M8 10h13v3H8 M12 10l-2 3 M16 10l-2 3 M20 10l-2 3 M2 21h8',
+    stadium: 'M3 9c0-2 4-4 9-4s9 2 9 4v6c0 2-4 4-9 4s-9-2-9-4z M3 9c0 2 4 4 9 4s9-2 9-4',
+    server: 'M4 4h16v6H4z M4 14h16v6H4z M8 7h.5 M8 17h.5',
+    tower: 'M9 21l1-10h4l1 10 M7 11h10l-1-4H8z M12 7V3 M7 21h10',
+    phone: 'M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2',
+    telescope: 'M3 12l13-6 2 4-13 6z M10 14l-3 7 M12 14l3 7 M16 6l2-1 2 4-2 1',
+    exchange: 'M3 20h18 M5 16l4-5 4 3 6-8 M15 6h4v4',
+    ship: 'M3 15h18l-3 5H6z M6 15V9h12v6 M10 9V5h4v4',
+    broadcast: 'M12 10v11 M9 21h6 M8.5 4.5a5 5 0 0 0 0 7 M15.5 4.5a5 5 0 0 1 0 7 M5.5 1.5a9 9 0 0 0 0 13 M18.5 1.5a9 9 0 0 1 0 13 M12 8h.5',
+    mail: 'M3 6h18v12H3z M3 6l9 7 9-7',
+    square: 'M4 5h16v11H9l-5 4z M8 9h8 M8 12h5',
+    flag: 'M5 21V4 M5 4h14l-3 4 3 4H5',
+    film: 'M3 5h18v14H3z M7 5v14 M17 5v14 M3 9h4 M3 15h4 M17 9h4 M17 15h4',
+    shop: 'M3 9l2-5h14l2 5 M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0 M5 12v9h14v-9 M10 21v-5h4v5',
+    pharmacy: 'M9 3h6v6h6v6h-6v6H9v-6H3V9h6z',
+    store: 'M4 10h16v11H4z M3 10l2-6h14l2 6 M9 21v-6h6v6',
+    radio: 'M4 9h16v12H4z M7 9l10-5 M15 12.5a2.5 2.5 0 1 1 0 5a2.5 2.5 0 1 1 0-5 M7 13h4 M7 17h4'
+  };
+
+  // A round map marker holding the place's icon.
+  function marker(name) {
+    var badge = document.createElement('i');
+    badge.className = 'place-icon';
+    badge.setAttribute('aria-hidden', 'true');
+    if (ICONS[name]) {
+      badge.innerHTML = '<svg viewBox="0 0 24 24"><path d="' + ICONS[name] + '"/></svg>';
+    }
+    return badge;
+  }
+
+  // Fills a node with its marker, label, note and place name.
+  function fillNode(el, item) {
+    if (item.icon) el.appendChild(marker(item.icon));
+    var text = document.createElement('span');
+    text.className = 'node-text';
+    var label = document.createElement('strong');
+    label.textContent = item.label;
+    text.appendChild(label);
+    if (item.note) {
+      var note = document.createElement('span');
+      note.className = 'node-note';
+      note.textContent = item.note;
+      text.appendChild(note);
+    }
+    if (item.place) {
+      var place = document.createElement('em');
+      place.className = 'node-place';
+      place.textContent = item.place;
+      text.appendChild(place);
+    }
+    el.appendChild(text);
+  }
 
   // ---- Build the canvas -------------------------------------------------
 
@@ -67,6 +140,7 @@
   svg.setAttribute('class', 'mindmap-lines');
   svg.setAttribute('aria-hidden', 'true');
   world.appendChild(svg);
+  drawTerrain();
   viewport.appendChild(world);
   map.insertBefore(viewport, source);
   source.hidden = true;
@@ -89,13 +163,72 @@
     return 'M' + x1 + ' ' + y1 + ' Q' + cx + ' ' + cy + ' ' + x2 + ' ' + y2;
   }
 
-  function addPath(d, className, group) {
-    var path = document.createElementNS(SVG_NS, 'path');
-    path.setAttribute('d', d);
-    path.setAttribute('class', className + ' line-' + group);
-    svg.appendChild(path);
-    return path;
+  function svgEl(name, attrs, parent) {
+    var el = document.createElementNS(SVG_NS, name);
+    Object.keys(attrs).forEach(function (key) {
+      el.setAttribute(key, attrs[key]);
+    });
+    (parent || svg).appendChild(el);
+    return el;
   }
+
+  // The city under the roads: blocks of side streets, a river, a lake and a few parks.
+  // Drawn once, far wider than the map, so panning never runs off the edge.
+  function drawTerrain() {
+    var EXTENT = 4000;
+    var defs = svgEl('defs', {});
+    var pattern = svgEl('pattern', { id: 'map-blocks', width: 150, height: 150, patternUnits: 'userSpaceOnUse' }, defs);
+    svgEl('path', { d: 'M0 0H150 M0 0V150 M0 75H150', class: 'terrain-street' }, pattern);
+    var land = svgEl('g', { class: 'terrain' });
+    svgEl('rect', { x: -EXTENT, y: -EXTENT, width: EXTENT * 2, height: EXTENT * 2, fill: 'url(#map-blocks)' }, land);
+    [
+      [-430, -260, 150, 110], [300, 140, 190, 120], [-240, 330, 130, 150],
+      [520, -420, 220, 140], [-900, 520, 260, 180], [880, 300, 200, 260]
+    ].forEach(function (p) {
+      svgEl('rect', { x: p[0], y: p[1], width: p[2], height: p[3], rx: 26, class: 'terrain-park' }, land);
+    });
+    svgEl('path', {
+      d: 'M-760 -4000 C-700 -1400 -420 -900 -560 -380 S-820 420 -640 900 S-560 2200 -700 4000',
+      class: 'terrain-river'
+    }, land);
+    svgEl('ellipse', { cx: 760, cy: 760, rx: 230, ry: 140, class: 'terrain-water' }, land);
+  }
+
+  // Roads are three strokes on one curve: the curb, the asphalt and the center line.
+  // Each kind of stroke has its own layer, so where roads meet they merge like a real junction
+  // instead of their curbs crossing over each other.
+  var layers = ['road-edge', 'road-fill', 'road-mark'].map(function (part) {
+    return svgEl('g', { class: part });
+  });
+
+  function addPath(d, className, group) {
+    var parts = layers.map(function (layer) {
+      return svgEl('path', { d: d, class: 'road ' + className + ' line-' + group }, layer);
+    });
+    // Callers treat a road like one element, so class changes go to all three strokes.
+    return {
+      parts: parts,
+      classList: {
+        toggle: function (name, on) {
+          parts.forEach(function (part) { part.classList.toggle(name, on); });
+        },
+        remove: function (name) {
+          parts.forEach(function (part) { part.classList.remove(name); });
+        }
+      }
+    };
+  }
+
+  function setRoad(road, d) {
+    road.parts.forEach(function (part) {
+      part.setAttribute('d', d);
+    });
+  }
+
+  // A roundabout where every avenue meets, with Alex in the middle.
+  layers.forEach(function (layer) {
+    svgEl('circle', { cx: 0, cy: 0, r: 64, class: 'road roundabout' }, layer);
+  });
 
   var center = document.createElement('button');
   center.type = 'button';
@@ -124,7 +257,7 @@
     node.className = 'node node-topic node-' + topic.group;
     node.dataset.topic = topic.id;
     node.setAttribute('aria-expanded', 'false');
-    node.textContent = topic.label;
+    fillNode(node, topic);
     place(node, topic.x, topic.y);
     world.appendChild(node);
     topic.node = node;
@@ -146,9 +279,7 @@
       el.tabIndex = -1;
       el.className = 'node node-detail node-' + topic.group;
       el.style.transitionDelay = j * 40 + 'ms';
-      el.innerHTML = '<strong></strong>' + (detail.note ? '<span></span>' : '');
-      el.querySelector('strong').textContent = detail.label;
-      if (detail.note) el.querySelector('span').textContent = detail.note;
+      fillNode(el, detail);
       if (branches) {
         el.classList.add('has-branches');
         el.setAttribute('aria-expanded', 'false');
@@ -169,9 +300,12 @@
         var subEl = document.createElement('div');
         subEl.className = 'node node-sub node-' + topic.group;
         subEl.style.transitionDelay = k * 40 + 'ms';
-        subEl.innerHTML = '<strong></strong>' + (sub.note ? '<span></span>' : '');
-        subEl.querySelector('strong').textContent = sub.label;
-        if (sub.note) subEl.querySelector('span').textContent = sub.note;
+        // A stop along the side street.
+        var stop = document.createElement('i');
+        stop.className = 'stop-dot';
+        stop.setAttribute('aria-hidden', 'true');
+        subEl.appendChild(stop);
+        fillNode(subEl, sub);
         world.appendChild(subEl);
         sub.node = subEl;
       });
@@ -259,7 +393,7 @@
         d.y = box.y;
         d.w = box.w;
         d.h = box.h;
-        d.path.setAttribute('d', curve(topic.x, topic.y, d.x, d.y));
+        setRoad(d.path, curve(topic.x, topic.y, d.x, d.y));
       });
 
       // Sub-branches fan out along the line from the topic through their detail,
@@ -286,7 +420,7 @@
           sub.y = box.y;
           sub.w = box.w;
           sub.h = box.h;
-          sub.path.setAttribute('d', curve(detail.x, detail.y, sub.x, sub.y));
+          setRoad(sub.path, curve(detail.x, detail.y, sub.x, sub.y));
           place(sub.node, detail.x, detail.y);
         });
       });
@@ -362,13 +496,13 @@
     topics.forEach(function (t) {
       var tx = all ? t.ax : t.x;
       var ty = all ? t.ay : t.y;
-      t.path.setAttribute('d', curve(0, 0, tx, ty));
+      setRoad(t.path, curve(0, 0, tx, ty));
       t.details.forEach(function (d) {
         var dx = all ? d.ax : d.x;
         var dy = all ? d.ay : d.y;
-        d.path.setAttribute('d', curve(tx, ty, dx, dy));
+        setRoad(d.path, curve(tx, ty, dx, dy));
         d.items.forEach(function (sub) {
-          sub.path.setAttribute('d', curve(dx, dy, all ? sub.ax : sub.x, all ? sub.ay : sub.y));
+          setRoad(sub.path, curve(dx, dy, all ? sub.ax : sub.x, all ? sub.ay : sub.y));
         });
       });
     });

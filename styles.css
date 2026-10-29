@@ -12,6 +12,14 @@
   --specialty: #4f6f52;
   --experience: #8a3b2e;
   --highlight-bg: #f1e7d6;
+  /* Street map under the mind map */
+  --map-land: #f1ead9;
+  --map-street: #e4d9c3;
+  --map-park: #dde5cb;
+  --map-water: #c6d9e1;
+  --road-edge: #d3c3a6;
+  --road-fill: #fffaf0;
+  --road-mark: #d6a240;
   --radius: 4px;
   --max-width: 840px;
   --font: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -33,6 +41,13 @@
   --specialty: #9cc29f;
   --experience: #e09a85;
   --highlight-bg: #2e2720;
+  --map-land: #201c18;
+  --map-street: #2b2520;
+  --map-park: #243022;
+  --map-water: #1d2b33;
+  --road-edge: #4b4137;
+  --road-fill: #363029;
+  --road-mark: #b88a3c;
   color-scheme: dark;
 }
 
@@ -49,6 +64,13 @@
     --specialty: #9cc29f;
     --experience: #e09a85;
     --highlight-bg: #2e2720;
+    --map-land: #201c18;
+    --map-street: #2b2520;
+    --map-park: #243022;
+    --map-water: #1d2b33;
+    --road-edge: #4b4137;
+    --road-fill: #363029;
+    --road-mark: #b88a3c;
     color-scheme: dark;
   }
 }
@@ -231,9 +253,7 @@ a {
   min-height: 420px;
   margin: 1rem 0 0.5rem;
   border-block: 1px solid var(--border);
-  background-color: var(--surface);
-  background-image: radial-gradient(var(--border) 1px, transparent 1px);
-  background-size: 22px 22px;
+  background-color: var(--map-land);
 }
 
 .mindmap-viewport {
@@ -271,42 +291,81 @@ a {
   height: 1px;
 }
 
-.mindmap-lines path {
+.mindmap-lines path,
+.mindmap-lines circle {
   fill: none;
-  stroke-width: 2.5;
   stroke-linecap: round;
-  transition: opacity 0.4s, stroke-width 0.3s;
+  transition: opacity 0.4s, stroke 0.3s;
 }
 
-.line-foundation { stroke: var(--foundation); }
-.line-specialty { stroke: var(--specialty); }
-.line-experience { stroke: var(--experience); }
-
-.topic-line {
-  opacity: 0.45;
+/* The city: side streets in a block grid, parks and water. */
+.terrain-street {
+  fill: none;
+  stroke: var(--map-street);
+  stroke-width: 3;
 }
 
-.topic-line.is-active {
-  opacity: 1;
-  stroke-width: 4;
+.terrain-park {
+  fill: var(--map-park);
+  stroke: none;
 }
 
-.detail-line {
-  opacity: 0;
-  stroke-dasharray: 4 6;
+.terrain-river {
+  stroke: var(--map-water);
+  stroke-width: 70;
 }
 
-.detail-line.is-open {
-  opacity: 0.8;
+.terrain-water {
+  fill: var(--map-water);
+  stroke: none;
 }
 
+/* Roads: a curb, asphalt and a dashed center line, wider for bigger roads.
+   Avenues run from the roundabout to each topic, streets to its places, lanes to the stops. */
+.road-edge .road {
+  stroke: var(--road-edge);
+}
+
+.road-fill .road {
+  stroke: var(--road-fill);
+}
+
+.road-mark .road {
+  stroke: var(--road-mark);
+}
+
+.road-edge .topic-line { stroke-width: 20; }
+.road-fill .topic-line { stroke-width: 15; }
+.road-mark .topic-line { stroke-width: 1.6; stroke-dasharray: 8 8; }
+
+.road-edge .roundabout { stroke-width: 22; }
+.road-fill .roundabout { stroke-width: 17; }
+.road-mark .roundabout { stroke-width: 1.6; stroke-dasharray: 8 8; }
+
+.road-edge .detail-line { stroke-width: 13; }
+.road-fill .detail-line { stroke-width: 9; }
+.road-mark .detail-line { stroke-width: 1.2; stroke-dasharray: 5 6; }
+
+.road-edge .sub-line { stroke-width: 7; }
+.road-fill .sub-line { stroke-width: 4; }
+.road-mark .sub-line { stroke-width: 0; }
+
+/* The open topic's roads take its color at the curb, like a highlighted route. */
+.road-edge .is-active.line-foundation,
+.road-edge .is-open.line-foundation { stroke: color-mix(in srgb, var(--foundation) 70%, var(--road-edge)); }
+.road-edge .is-active.line-specialty,
+.road-edge .is-open.line-specialty { stroke: color-mix(in srgb, var(--specialty) 70%, var(--road-edge)); }
+.road-edge .is-active.line-experience,
+.road-edge .is-open.line-experience { stroke: color-mix(in srgb, var(--experience) 70%, var(--road-edge)); }
+
+.detail-line,
 .sub-line {
   opacity: 0;
-  stroke-width: 1.75;
 }
 
+.detail-line.is-open,
 .sub-line.is-open {
-  opacity: 0.7;
+  opacity: 1;
 }
 
 .node {
@@ -359,11 +418,13 @@ button.node:focus-visible {
   box-shadow: none;
 }
 
-.node-detail.is-dimmed span {
+.node-detail.is-dimmed .node-note,
+.node-detail.is-dimmed .node-place {
   color: color-mix(in srgb, var(--node-color) 45%, var(--surface));
 }
 
-.node-detail.is-dimmed .branch-mark {
+.node-detail.is-dimmed .branch-mark,
+.node-detail.is-dimmed .place-icon {
   background: color-mix(in srgb, var(--node-color) 40%, var(--surface));
 }
 
@@ -373,29 +434,111 @@ button.node:focus-visible {
 }
 
 .detail-line.is-open.is-dimmed {
-  opacity: 0.15;
+  opacity: 0.3;
 }
 
+/* Other avenues stay on the map, just quieter. */
 .has-active .topic-line:not(.is-active) {
-  opacity: 0.15;
+  opacity: 0.55;
 }
 
 .node-center {
-  --node-color: var(--text);
+  --node-color: var(--accent);
   z-index: 1;
-  padding: 1.1rem 1.6rem;
-  background: var(--text);
-  color: var(--bg);
+  display: grid;
+  place-items: center;
+  width: 5.75rem;
+  height: 5.75rem;
+  padding: 0;
+  border: 3px solid var(--surface);
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-family: var(--font-display);
   font-size: 1.5rem;
+  box-shadow: 0 0 0 2px var(--accent), 0 4px 14px rgb(0 0 0 / 0.15);
+}
+
+/* Map labels: a round marker with the place's icon, then the label, note and place name. */
+.node-topic,
+.node-detail,
+.node-sub {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.6rem;
+  text-align: left;
+}
+
+.node-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+  min-width: 0;
+}
+
+.place-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--node-color);
+  color: var(--surface);
+}
+
+.place-icon svg {
+  width: 1.2rem;
+  height: 1.2rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.node-topic {
+  padding: 0.45rem 1rem 0.45rem 0.45rem;
+}
+
+.node-topic .place-icon {
+  width: 2.3rem;
+  height: 2.3rem;
+}
+
+.node-topic.is-active .place-icon {
+  background: var(--surface);
+  color: var(--node-color);
+}
+
+.node-place {
+  font-size: 0.85rem;
+  font-weight: 500;
+  font-style: italic;
+  color: var(--muted);
+}
+
+.node-topic.is-active .node-place {
+  color: inherit;
+  opacity: 0.85;
+}
+
+/* Stops on the lanes: a small dot in the topic's color, like a bus stop. */
+.stop-dot {
+  flex: none;
+  width: 0.7rem;
+  height: 0.7rem;
+  border: 2px solid var(--surface);
+  border-radius: 50%;
+  background: var(--node-color);
+  box-shadow: 0 0 0 1.5px var(--node-color);
 }
 
 .node-detail {
   z-index: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
   max-width: none;
-  padding: 0.55rem 0.9rem;
+  padding: 0.45rem 0.9rem 0.45rem 0.45rem;
   border-width: 1.5px;
   border-radius: 14px;
   font-size: 1.05rem;
@@ -452,11 +595,10 @@ button.node-detail {
 
 .node-sub {
   z-index: 0;
-  display: flex;
-  flex-direction: column;
-  padding: 0.4rem 0.85rem;
-  border-width: 1.5px;
-  border-style: dashed;
+  gap: 0.45rem;
+  padding: 0.35rem 0.8rem 0.35rem 0.55rem;
+  border-width: 1px;
+  border-color: color-mix(in srgb, var(--node-color) 40%, var(--border));
   border-radius: 999px;
   font-size: 1rem;
   font-weight: 600;
@@ -473,13 +615,13 @@ button.node-detail {
   transform: translate(-50%, -50%) scale(1);
 }
 
-.node-sub span {
+.node-sub .node-note {
   font-size: 0.85rem;
   font-weight: 500;
   color: var(--node-color);
 }
 
-.node-detail span {
+.node-detail .node-note {
   font-size: 0.95rem;
   font-weight: 500;
   color: var(--node-color);
@@ -637,14 +779,24 @@ button.node-detail {
   }
 
   .node-topic {
-    max-width: 9rem;
+    max-width: 11rem;
     white-space: normal;
   }
 
   .node-detail,
   .node-sub {
-    max-width: 10rem;
+    max-width: 12rem;
     white-space: normal;
+  }
+
+  .place-icon {
+    width: 1.7rem;
+    height: 1.7rem;
+  }
+
+  .place-icon svg {
+    width: 1rem;
+    height: 1rem;
   }
 
   .map-hint {
