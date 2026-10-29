@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Alex Lin | Credit &amp; Data Analytics</title>
   <meta name="description" content="Yuching (Alex) Lin: Senior Credit Data Analyst in New York with an MBA and a tech background, working across credit, data analytics and digital marketing.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Source+Sans+3:wght@400;600;700&display=swap">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -23,6 +27,8 @@
         <li><a href="#contact">Contact</a></li>
       </ul>
     </nav>
+    <!-- Race-course progress bar: filled by course.js as the page scrolls; each checkpoint is a section. -->
+    <div class="course" data-course aria-hidden="true"></div>
   </header>
 
   <main id="main">
@@ -430,6 +436,7 @@
 
   <script src="mindmap.js" defer></script>
   <script src="reveal.js" defer></script>
+  <script src="course.js" defer></script>
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 </body>
 </html>
