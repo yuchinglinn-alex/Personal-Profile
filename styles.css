@@ -507,6 +507,39 @@ button.node-detail {
   background: var(--highlight-bg);
 }
 
+.map-expand {
+  position: absolute;
+  left: 0.75rem;
+  top: 0.75rem;
+  z-index: 2;
+  padding: 0.5rem 0.95rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 0.08);
+  cursor: pointer;
+}
+
+.map-expand:hover,
+.map-expand:focus-visible {
+  background: var(--highlight-bg);
+}
+
+.map-expand[aria-pressed="true"] {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Topics glide out to their wider ring when everything expands. */
+.node-topic {
+  transition: left 0.5s cubic-bezier(0.22, 1, 0.36, 1), top 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.2s, color 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
 .map-hint {
   position: absolute;
   left: 50%;
