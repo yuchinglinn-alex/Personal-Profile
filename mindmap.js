@@ -11,17 +11,22 @@
   var hint = map.querySelector('.map-hint');
   var panels = document.querySelectorAll('[data-topic-panel]');
   var roles = document.querySelectorAll('.role[data-topics]');
+  var resumeBox = document.querySelector('.resume-match');
   var SVG_NS = 'http://www.w3.org/2000/svg';
 
   // World layout, in px before zoom.
   var TOPIC_RADIUS = 280;
   var DETAIL_RADIUS = 220;
   var DETAIL_SPREAD = Math.PI * 0.8;
-  var MIN_SCALE = 0.3;
+  var MIN_SCALE = 0.15;
   var MAX_SCALE = 2.5;
   var SUB_RADIUS = 175;
   var SUB_SPREAD = Math.PI * 0.85;
   var FOCUS_MAX_SCALE = 1.3;
+  // With everything expanded, topics move this much further out to make room.
+  // Each step is [ring, local]: how much further topics move out, and how much further
+  // details and branches sit from their parent.
+  var ALL_SPREAD = [[1.8, 1.1], [2.1, 1.1], [2.4, 1.15], [2.7, 1.2], [3, 1.2], [3.4, 1.25]];
   var GAP = 14;
 
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -36,6 +41,8 @@
       return {
         label: item.firstChild.textContent.trim(),
         note: small ? small.textContent.trim() : '',
+        // Ids of the resume lines this item comes from; [] means not on the resume, null means untagged.
+        source: item.hasAttribute('data-source') ? item.dataset.source.split(/\s+/).filter(Boolean) : null,
         items: readItems(item.querySelector(':scope > ul'))
       };
     });
@@ -133,17 +140,18 @@
       detail.path = addPath(curve(topic.x, topic.y, detail.x, detail.y), 'detail-line', topic.group);
 
       var branches = detail.items.length > 0;
-      var el = document.createElement(branches ? 'button' : 'div');
+      // Every detail is clickable: it shows its resume lines and, if it has any, its branches.
+      var el = document.createElement('button');
+      el.type = 'button';
+      el.tabIndex = -1;
       el.className = 'node node-detail node-' + topic.group;
       el.style.transitionDelay = j * 40 + 'ms';
       el.innerHTML = '<strong></strong>' + (detail.note ? '<span></span>' : '');
       el.querySelector('strong').textContent = detail.label;
       if (detail.note) el.querySelector('span').textContent = detail.note;
       if (branches) {
-        el.type = 'button';
         el.classList.add('has-branches');
         el.setAttribute('aria-expanded', 'false');
-        el.tabIndex = -1;
         var mark = document.createElement('i');
         mark.className = 'branch-mark';
         mark.setAttribute('aria-hidden', 'true');
@@ -209,7 +217,16 @@
       }
       if (!moved) return true;
     }
-    return false;
+    // Still nudging after all passes: fine as long as nothing actually overlaps.
+    return !boxes.some(function (a, i) {
+      return boxes.slice(i + 1).concat(fixed).some(function (b) {
+        return touching(a, b);
+      });
+    });
+  }
+
+  function touching(a, b) {
+    return Math.abs(a.x - b.x) < (a.w + b.w) / 2 && Math.abs(a.y - b.y) < (a.h + b.h) / 2;
   }
 
   function boxFor(item, x, y) {
@@ -278,6 +295,85 @@
 
   relax();
 
+  // A second layout for "Expand all": every detail and branch on screen at once,
+  // spread across the whole map instead of just around one topic.
+  function relaxAll(ring, local) {
+    topics.forEach(function (t) {
+      t.ax = t.x * ring;
+      t.ay = t.y * ring;
+    });
+    var c = size(center);
+    var fixed = [{ x: 0, y: 0, w: c.w, h: c.h }].concat(topics.map(function (t) {
+      return { x: t.ax, y: t.ay, w: t.w, h: t.h };
+    }));
+    var detailBoxes = [];
+    topics.forEach(function (t) {
+      t.details.forEach(function (d) {
+        detailBoxes.push(boxFor(d, t.ax + (d.x - t.x) * local, t.ay + (d.y - t.y) * local));
+      });
+    });
+    var settled = spread(detailBoxes, fixed);
+    detailBoxes.forEach(function (box) {
+      box.item.ax = box.x;
+      box.item.ay = box.y;
+    });
+    var subBoxes = [];
+    topics.forEach(function (t) {
+      t.details.forEach(function (d) {
+        d.items.forEach(function (sub) {
+          subBoxes.push(boxFor(sub, d.ax + (sub.x - d.x) * local, d.ay + (sub.y - d.y) * local));
+        });
+      });
+    });
+    // Details and branches settle together so details can make room for crowded branches.
+    settled = spread(detailBoxes.concat(subBoxes), fixed);
+    detailBoxes.forEach(function (box) {
+      box.item.ax = box.x;
+      box.item.ay = box.y;
+    });
+    subBoxes.forEach(function (box) {
+      box.item.ax = box.x;
+      box.item.ay = box.y;
+    });
+    return settled && staysHome();
+  }
+
+  // Each topic's details and branches should sit nearer their own topic than any other,
+  // so the clusters read as separate groups.
+  function staysHome() {
+    return topics.every(function (t) {
+      return t.details.every(function (d) {
+        return [d].concat(d.items).every(function (item) {
+          var own = Math.hypot(item.ax - t.ax, item.ay - t.ay);
+          return topics.every(function (other) {
+            return other === t || Math.hypot(item.ax - other.ax, item.ay - other.ay) > own;
+          });
+        });
+      });
+    });
+  }
+
+  // Widen the ring until every box settles without overlapping.
+  for (var f = 0; f < ALL_SPREAD.length; f++) {
+    if (relaxAll(ALL_SPREAD[f][0], ALL_SPREAD[f][1])) break;
+  }
+
+  function setPaths(all) {
+    topics.forEach(function (t) {
+      var tx = all ? t.ax : t.x;
+      var ty = all ? t.ay : t.y;
+      t.path.setAttribute('d', curve(0, 0, tx, ty));
+      t.details.forEach(function (d) {
+        var dx = all ? d.ax : d.x;
+        var dy = all ? d.ay : d.y;
+        d.path.setAttribute('d', curve(tx, ty, dx, dy));
+        d.items.forEach(function (sub) {
+          sub.path.setAttribute('d', curve(dx, dy, all ? sub.ax : sub.x, all ? sub.ay : sub.y));
+        });
+      });
+    });
+  }
+
   // Show each role's topics as small tags, so the link back to the map is visible.
   roles.forEach(function (role) {
     var list = document.createElement('ul');
@@ -306,7 +402,7 @@
   }
 
   // Frame a world-space box, centered in the viewport.
-  function fit(box, animate, maxScale) {
+  function fit(box, animate, maxScale, minScale) {
     var w = viewport.clientWidth;
     var h = viewport.clientHeight;
     // Leave room for the zoom buttons and the hint.
@@ -314,6 +410,7 @@
     var padY = 56;
     var s = clampScale(Math.min((w - padX * 2) / (box.maxX - box.minX), (h - padY * 2) / (box.maxY - box.minY)));
     if (maxScale) s = Math.min(s, maxScale);
+    if (minScale) s = Math.max(s, minScale);
     cam.scale = s;
     cam.x = -((box.minX + box.maxX) / 2) * s;
     cam.y = -((box.minY + box.maxY) / 2) * s;
@@ -342,6 +439,20 @@
     fit(boxAround([detail, detail.topic].concat(detail.items), { x: 90, y: 30 }), animate, FOCUS_MAX_SCALE);
   }
 
+  function fitExpanded(animate) {
+    var points = [{ x: 0, y: 0 }];
+    topics.forEach(function (t) {
+      points.push({ x: t.ax, y: t.ay, w: t.w, h: t.h });
+      t.details.forEach(function (d) {
+        points.push({ x: d.ax, y: d.ay, w: d.w, h: d.h });
+        d.items.forEach(function (sub) {
+          points.push({ x: sub.ax, y: sub.ay, w: sub.w, h: sub.h });
+        });
+      });
+    });
+    fit(boxAround(points, { x: 90, y: 40 }), animate);
+  }
+
   function fitAll(animate) {
     fit(boxAround(topics.concat([{ x: 0, y: 0 }]), { x: 90, y: 40 }), animate, 1.4);
   }
@@ -363,11 +474,85 @@
 
   function showBranches(detail, open) {
     detail.node.classList.toggle('is-expanded', open);
-    detail.node.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (detail.items.length) detail.node.setAttribute('aria-expanded', open ? 'true' : 'false');
     detail.items.forEach(function (sub) {
       sub.node.classList.toggle('is-open', open);
       sub.path.classList.toggle('is-open', open);
       place(sub.node, open ? sub.x : detail.x, open ? sub.y : detail.y);
+    });
+  }
+
+  // ---- Resume cross-reference -------------------------------------------
+
+  var sourceLines = [];
+
+  // Where a resume line sits: its role, degree or skill group.
+  function contextOf(el) {
+    var holder = el.closest('.role, .edu > li');
+    if (holder) return holder.querySelector('h3').textContent.replace(/\s+/g, ' ').trim();
+    var group = el.previousElementSibling;
+    if (group && group.matches('.skill-group')) return 'Skills · ' + group.textContent;
+    return '';
+  }
+
+  function textOf(el) {
+    if (el.matches('ul')) {
+      return Array.prototype.map.call(el.children, function (li) { return li.textContent; }).join(' · ');
+    }
+    return el.textContent.trim();
+  }
+
+  function showSource(detail) {
+    sourceLines.forEach(function (el) { el.classList.remove('is-source'); });
+    sourceLines = [];
+    if (!resumeBox) return;
+    // The resume card takes the topic panel's place, right under the map.
+    panels.forEach(function (panel) {
+      panel.hidden = detail ? true : panel.dataset.topicPanel !== (active || 'none');
+    });
+    resumeBox.innerHTML = '';
+    resumeBox.hidden = !detail || !detail.source;
+    if (resumeBox.hidden) return;
+
+    var heading = document.createElement('h3');
+    heading.textContent = detail.label + ' on my resume';
+    resumeBox.appendChild(heading);
+
+    if (!detail.source.length) {
+      var none = document.createElement('p');
+      none.className = 'resume-none';
+      none.textContent = 'Not on my resume yet. This is an additional project, listed under Projects.';
+      resumeBox.appendChild(none);
+      return;
+    }
+
+    detail.source.forEach(function (id) {
+      var line = document.getElementById(id);
+      if (!line) return;
+      line.classList.add('is-source');
+      sourceLines.push(line);
+
+      var item = document.createElement('figure');
+      item.className = 'resume-line';
+      var where = document.createElement('figcaption');
+      where.textContent = contextOf(line);
+      var quote = document.createElement('blockquote');
+      quote.textContent = textOf(line);
+      var jump = document.createElement('button');
+      jump.type = 'button';
+      jump.className = 'resume-jump';
+      jump.textContent = 'Show it on the page ↓';
+      jump.addEventListener('click', function () {
+        line.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' });
+        line.classList.remove('is-flash');
+        // Restart the flash animation even if it ran before.
+        void line.offsetWidth;
+        line.classList.add('is-flash');
+      });
+      item.appendChild(where);
+      item.appendChild(quote);
+      item.appendChild(jump);
+      resumeBox.appendChild(item);
     });
   }
 
@@ -381,6 +566,7 @@
         d.path.classList.toggle('is-dimmed', !!activeDetail && d !== activeDetail);
       });
     });
+    showSource(activeDetail);
     if (activeDetail) {
       showBranches(activeDetail, true);
       focusOnDetail(activeDetail, true);
@@ -389,7 +575,62 @@
     }
   }
 
+  // ---- Expand all -------------------------------------------------------
+
+  var allMode = false;
+  var allPicked = null;
+  var expandButton = map.querySelector('.map-expand');
+
+  function setAll(on) {
+    if (on) {
+      if (activeDetail) openDetail(activeDetail);
+      if (active) select(active);
+    }
+    allMode = on;
+    map.classList.toggle('is-all', on);
+    expandButton.setAttribute('aria-pressed', on ? 'true' : 'false');
+    expandButton.textContent = on ? 'Collapse all' : 'Expand all';
+    if (allPicked) allPicked.node.classList.remove('is-expanded');
+    allPicked = null;
+    showSource(null);
+    setPaths(on);
+
+    topics.forEach(function (t) {
+      place(t.node, on ? t.ax : t.x, on ? t.ay : t.y);
+      t.details.forEach(function (d) {
+        d.node.classList.toggle('is-open', on);
+        d.node.classList.remove('is-dimmed');
+        d.path.classList.toggle('is-open', on);
+        d.path.classList.remove('is-dimmed');
+        d.node.tabIndex = on ? 0 : -1;
+        place(d.node, on ? d.ax : t.x, on ? d.ay : t.y);
+        d.items.forEach(function (sub) {
+          sub.node.classList.toggle('is-open', on);
+          sub.path.classList.toggle('is-open', on);
+          place(sub.node, on ? sub.ax : d.x, on ? sub.ay : d.y);
+        });
+      });
+    });
+
+    if (on) fitExpanded(true);
+    else fitAll(true);
+  }
+
+  // With everything open, tapping a detail just shows its resume lines.
+  function pickInAll(detail) {
+    if (allPicked) allPicked.node.classList.remove('is-expanded');
+    allPicked = allPicked === detail ? null : detail;
+    if (allPicked) allPicked.node.classList.add('is-expanded');
+    showSource(allPicked);
+  }
+
+  expandButton.hidden = false;
+  expandButton.addEventListener('click', function () {
+    setAll(!allMode);
+  });
+
   function select(id) {
+    if (allMode) setAll(false);
     active = active === id ? null : id;
     if (activeDetail) openDetail(activeDetail);
 
@@ -401,7 +642,7 @@
       topic.details.forEach(function (detail) {
         detail.node.classList.toggle('is-open', open);
         detail.path.classList.toggle('is-open', open);
-        if (detail.items.length) detail.node.tabIndex = open ? 0 : -1;
+        detail.node.tabIndex = open ? 0 : -1;
         place(detail.node, open ? detail.x : topic.x, open ? detail.y : topic.y);
       });
     });
@@ -429,17 +670,18 @@
       select(topic.id);
     });
     topic.details.forEach(function (detail) {
-      if (!detail.items.length) return;
       detail.node.addEventListener('click', function () {
         if (dragged) return;
-        openDetail(detail);
+        if (allMode) pickInAll(detail);
+        else openDetail(detail);
       });
     });
   });
 
   center.addEventListener('click', function () {
     if (dragged) return;
-    if (active) select(active);
+    if (allMode) setAll(false);
+    else if (active) select(active);
     else fitAll(true);
   });
 
@@ -450,7 +692,8 @@
     if (action === 'in') zoomAt(1.3, 0, 0, true);
     if (action === 'out') zoomAt(1 / 1.3, 0, 0, true);
     if (action === 'reset') {
-      if (active) select(active);
+      if (allMode) setAll(false);
+      else if (active) select(active);
       else fitAll(true);
     }
   });
@@ -458,6 +701,7 @@
   map.addEventListener('keydown', function (e) {
     if (e.key === '+' || e.key === '=') zoomAt(1.3, 0, 0, true);
     else if (e.key === '-') zoomAt(1 / 1.3, 0, 0, true);
+    else if (e.key === 'Escape' && allMode) setAll(false);
     else if (e.key === 'Escape' && activeDetail) openDetail(activeDetail);
     else if (e.key === 'Escape' && active) select(active);
   });
@@ -553,7 +797,8 @@
     cancelAnimationFrame(pending);
     pending = requestAnimationFrame(function () {
       var topic = topics.filter(function (t) { return t.id === active; })[0];
-      if (activeDetail) focusOnDetail(activeDetail, false);
+      if (allMode) fitExpanded(false);
+      else if (activeDetail) focusOnDetail(activeDetail, false);
       else if (topic) focusOn(topic, false);
       else fitAll(false);
     });
